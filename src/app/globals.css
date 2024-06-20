@@ -1,0 +1,34 @@
+:root {
+  --background-dark:  linear-gradient(133deg, #001E4D , #000814 20%, #000814 85%, #001E4D  );
+  --background-info:  linear-gradient(153deg, #001E4D , #020b1a 85% );
+  --background-modal:  linear-gradient(133deg, #001E4D , #000814 80% );
+  --background-light:  linear-gradient(63deg, #00CAFC , #0056E2 70%  );
+  --color-grey:#404A5C;
+  --color-light: #FFFFFF;
+
+  --size-titulo: 30px;
+  --size-subTitulo: 18px;
+  --size-text: 1rem;
+
+  --weight-700:700;
+  --weight-400:400;
+
+  --background-toast:  linear-gradient(133deg, #0056E2 , #001E4D 30%, #001E4D 75%, #0056E2  );
+  
+}
+
+body{
+  margin: 0;
+  padding: 0;
+
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    
+}
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}

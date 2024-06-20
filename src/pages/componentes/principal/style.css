@@ -1,0 +1,99 @@
+/* Para Chrome e Safari */
+::-webkit-scrollbar {
+  width: 0px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-thumb {
+  background-image: var(
+    --background-dark
+  ); /* Cor do controle deslizante da barra */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-image: var(
+    --background-light
+  ); /* Cor do controle deslizante da barra ao passar o mouse */
+}
+.Toastify__toast--success {
+  background-color: #4caf50; /* Cor de fundo para toasts de sucesso */
+}
+
+.Toastify__toast--error {
+  background-color: #f44336; /* Cor de fundo para toasts de erro */
+}
+.container {
+  width: 100%;
+  height: 100vh;
+  background-image: var(--background-dark);
+  position: relative;
+}
+.painel {
+  padding: 2% 3%;
+}
+.logo {
+  display: block;
+  margin-bottom: 1.5%;
+}
+
+.search-cadastro {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 2%;
+}
+.search {
+  display: flex;
+  border: 3px solid var(--color-grey);
+  border-radius: 10px;
+  width: 85%;
+}
+.lupa {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 40px;
+  background-color: var(--color-grey);
+}
+.inputSearch {
+  width: 90%;
+  border: none;
+  border-left: none;
+  border-right: none;
+  background-color: transparent;
+  font-size: 1.3rem;
+  padding-left: 0.7rem;
+}
+.buttonSubmit {
+  width: 106px;
+  margin: 4px;
+  background-color: var(--color-grey);
+  border: none;
+  border-radius: 5px;
+  font-size: var(--size-text);
+  font-weight: var(--weight-700);
+  cursor: pointer;
+}
+.cadastrar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5%;
+  width: 15%;
+  background-image: var(--background-light);
+  border: none;
+  border-radius: 10px;
+  font-size: var(--size-text);
+  font-weight: var(--weight-700);
+  cursor: pointer;
+
+}
+.lista {
+  overflow: scroll;
+  gap: 1.5%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr ;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  height: 67vh;
+}
+
+

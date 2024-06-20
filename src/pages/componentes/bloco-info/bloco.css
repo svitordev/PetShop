@@ -1,0 +1,109 @@
+/*INFORMAÇÕES PRINCIPAIS */
+.bloco-info {
+  background-image: var(--background-info);
+  border-radius: 10px;
+  cursor: pointer;
+  height: 80px;
+  position: relative;
+}
+
+
+.info-principal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.bloco-info ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+}
+.bloco-info ul li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--size-text);
+  font-weight: var(--weight-400);
+}
+.pet {
+  width: 27%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.circulo-pet {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-image: var(--background-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5%;
+}
+.setaBaixo {
+  margin: 0 10px;
+}
+
+/*INFORMAÇÕES EXTRAS */
+
+.maisInfo {
+  display: flex;
+  flex-direction: column;
+  border: solid 3px dodgerblue;
+  border-radius: 10px;
+  background-image: var(--background-info);
+  z-index: 2;
+  position: absolute;
+  width: 98.3%;
+  top: 110%;
+}
+.infosExtra {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  margin: 15px;
+  width: 80%;
+}
+.infosExtra span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: var(--weight-400);
+  font-size: var(--size-text);
+}
+.infosExtra span a{
+  text-decoration: none;
+  color: aquamarine;
+}
+.imgdna {
+  margin: 0 3px;
+}
+.marginRight {
+  margin-right: 5px;
+}
+.buttonEdit,
+.buttonRemove {
+  width: 90%;
+  margin: 0 5%;
+  margin-bottom: 5%;
+  height: 40px;
+  font-size: var(--size-text);
+  font-weight: var(--weight-700);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.buttonEdit {
+  background-color: var(--color-light);
+}
+.buttonRemove {
+  background-image: var(--background-light);
+}

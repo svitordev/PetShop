@@ -1,0 +1,145 @@
+.modal-container {
+  width: 55%;
+  height: 70dvh;
+  padding: 3% 0;
+  position: absolute;
+  z-index: 100;
+  top: 8vh;
+  left: 22.5%;
+  border: 3px solid dodgerblue;
+  background-image: var(--background-info);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2%;
+}
+.modal-container p{
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+.titulo-close {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 10%;
+}
+.close {
+  cursor: pointer;
+}
+.titulo {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  gap: 2%;
+}
+.circulo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-image: var(--background-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1%;
+}
+.circulo .icon {
+  width: 35px;
+  height: 35px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.campo span {
+  display: flex;
+  gap: 8px;
+}
+.spanExtra,
+::placeholder {
+  color: var(--color-grey);
+}
+.campo input {
+  font-size: 0.9rem;
+  font-weight: 400;
+  padding: 6px;
+  background-color: transparent;
+  border: none;
+  border: 3px solid var(--color-grey);
+  border-radius: 10px;
+  color: var(--color-light);
+}
+.divPet {
+  display: flex;
+  justify-content: flex-start;
+  width: 45%;
+  background-color: transparent;
+  font-size: 0.9rem;
+  font-weight: 400;
+  padding: 6px;
+  border: none;
+  border: 3px solid var(--color-grey);
+  border-radius: 10px;
+  color: var(--color-grey);
+  cursor: pointer;
+}
+.divPet label {
+  cursor: pointer;
+}
+input[type="radio"]:checked + label {
+  color: #ffffff;
+}
+input[type="radio"] {
+  margin: 0 3px;
+  accent-color: var(--color-light);
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+.divOptions {
+  width: 100%;
+  height: 34px;
+  display: flex;
+  gap: 3%;
+}
+.containerForm {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.containerInfos {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+  margin: 5% auto;
+}
+.blocoInfos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 37.5%;
+}
+.botoes {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 90;
+}

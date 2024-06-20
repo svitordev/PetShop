@@ -1,0 +1,30 @@
+.buttonBack,
+.buttonSalvar,
+.buttonDelete{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  width: 37.5%;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+.buttonBack{
+  background-color: var(--color-light);
+}
+.buttonSalvar{
+  background-image: var(--background-light);
+}
+.buttonSalvar,
+.buttonDelete{
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.buttonDelete{
+  background-color: #ED254E;
+}
+.mais{
+  height: 19px;
+}
