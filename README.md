@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🐾 Sistema de Petshop | Fullstack App
 
-## Getting Started
+Este é um sistema completo para gerenciamento de pets desenvolvido com **Next.js**, **Express** e **MongoDB**, ideal para petshops que desejam organizar o cadastro de animais e se comunicar com seus donos facilmente.
 
-First, run the development server:
+🔗 **Funcionalidade principal:** Cadastro de pets com dados dos donos, listagem, busca, edição, exclusão e contato via WhatsApp.
+
+---
+
+## ✨ Funcionalidades
+
+- ➕ Cadastro de Pets com informações do dono  
+- 🔍 Busca por nome do pet ou nome do dono  
+- 📋 Listagem de pets em ordem alfabética na página inicial  
+- ✏️ Edição e exclusão de registros  
+- 📱 Botão de contato via WhatsApp com o dono  
+
+---
+
+## 📌 Informações Armazenadas
+
+### 🐶 Pet
+- Nome
+- Raça
+- Data de nascimento
+
+### 👤 Dono
+- Nome
+- Telefone
+
+---
+
+## 🧰 Tecnologias Utilizadas
+
+### 🖥️ Frontend
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [Styled-components](https://styled-components.com/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Zod](https://github.com/colinhacks/zod)
+- [React Modal](https://reactcommunity.org/react-modal/)
+- [React Toastify](https://fkhadra.github.io/react-toastify/)
+
+### 🌐 Backend
+- [Express.js](https://expressjs.com/)
+- [MongoDB](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
+- [CORS](https://www.npmjs.com/package/cors)
+- [Axios](https://axios-http.com/)
+
+---
+
+## 📬 Contato
+
+- 💼 LinkedIn: [linkedin.com/in/svitordev](https://www.linkedin.com/in/devsvitor/)  
+- 🐙 GitHub: [github.com/svitordev](https://github.com/svitordev)  
+- ✉️ Email: [svitor.dev@gmail.com](mailto:svitor.dev@gmail.com)
+
+---
+
+## 🛠️ Scripts Disponíveis
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+npm run dev       # Inicia o app em modo desenvolvimento (Next.js)
+npm run build     # Cria a build de produção
+npm start         # Inicia a aplicação (modo produção)
+npm run lint      # Verifica problemas com ESLint
