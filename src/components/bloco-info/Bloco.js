@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import "@/pages/componentes/bloco-info/bloco.css";
+import "@/components/bloco-info/bloco.css";
 
 import Coleira from "@/assets/icone/coleira.svg";
 import User from "@/assets/icone/user.svg";
@@ -18,14 +18,14 @@ import Editar from "@/assets/icone/editar.svg";
 import Lixeira from "@/assets/icone/lixeira.svg";
 import editarText from "@/assets/icone/text-editar.svg";
 
-import ModalEdit from "@/pages/componentes/modal/ModalEdit.js";
+import ModalEdit from "@/components/modal/ModalEdit.js";
 import ModalDel from "../modal/ModalDel.js";
 import {
   ButtonEdit,
   ButtonDelete,
   IconeDeletar,
   IconeEditar,
-} from "@/pages/componentes/modal/buttons";
+} from "@/components/modal/buttons";
 
 const blocoInfo = ({
   getPets,
@@ -104,15 +104,16 @@ const blocoInfo = ({
     toggleSrc();
   }
   async function handleDelete(i) {
-    await axios
-      .delete("http://localhost:8800/" + i)
-      .then(({ data }) => {
-        
-        toast.success(data);
-      })
-      .catch(({ data }) => toast.error(data));
+    try {
+      const { data } = await axios.delete("http://localhost:8800/" + i);
 
-    setOnEdit(null);
+      toast.success(data);
+      await getPets();
+      closeModalDel();
+      setOnEdit(null);
+    } catch {
+      toast.error("Não foi possível remover o pet. Tente novamente.");
+    }
   }
   const whatssap = `https://wa.me/55${telefone}`;
   return (

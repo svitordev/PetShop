@@ -1,54 +1,25 @@
 import ReactModal from "react-modal";
-
-import "@/pages/componentes/principal/style.css";
+import "@/components/principal/style.css";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Coleira from "@/assets/icone/coleira.svg";
 import User from "@/assets/icone/user.svg";
 import Dna from "@/assets/icone/dna.svg";
 import Telefone from "@/assets/icone/telefone.svg";
 import Idade from "@/assets/icone/idade.svg";
-import { ButtonBack } from "./buttons";
+import { ButtonBack, ButtonDelete } from "./buttons";
 
 import close from "@/assets/icone/close.svg";
-import "@/pages/componentes/modal/modal.css";
-import axios from "axios";
-import { toast } from "react-toastify";
-const petsCreateSchema = z.object({
-  namePet: z.string().min(1, "O nome do pet é obrigatório."),
-  nameDono: z.string().min(1, "O nome do dono é obrigatório."),
-  telefone: z.string(),
-  animal: z.string().min(1, "O tipo de animal é obrigatório."),
-  raca: z.string().min(1, "A raça é obrigatória."),
-  data: z.string().min(1, "A data é obrigatória."),
-});
-const ModalCad = ({
-  getPets,
+import "@/components/modal/modal.css";
+
+const ModalDel = ({
   isOpen,
   onRequestClose,
-  setOnEdit,
-  pets,
-  setPets,
   title,
+  selectedPet,
   icons,
   button,
 }) => {
-  const { register, handleSubmit } = useForm({
-    resolver: zodResolver(petsCreateSchema),
-  });
-  async function handleCreate(dados) {
-    await axios
-      .post("http://localhost:8800/", dados)
-      .then(({ data }) => {
-        getPets();
-        onRequestClose();
-        toast.success(data);
-      })
-      .catch(({ data }) => toast.error(data));
-  }
-
+  console.log(selectedPet);
   return (
     <ReactModal
       isOpen={isOpen}
@@ -66,8 +37,7 @@ const ModalCad = ({
             <Image src={close} alt="" />
           </div>
         </div>
-        {/* form */}
-        <form onSubmit={handleSubmit(handleCreate)} className="containerForm">
+        <form className="containerForm">
           <div className="containerInfos">
             <div className="blocoInfos">
               <div className="campo">
@@ -78,7 +48,8 @@ const ModalCad = ({
                 <input
                   type="text"
                   placeholder="Nome Sobrenome"
-                  {...register("namePet")}
+                  value={selectedPet?.namePet}
+                  disabled
                 ></input>
               </div>
               <div className="campo">
@@ -89,7 +60,8 @@ const ModalCad = ({
                 <input
                   type="text"
                   placeholder="Nome Sobrenome"
-                  {...register("nameDono")}
+                  value={selectedPet?.nameDono}
+                  disabled
                 ></input>
               </div>
               <div className="campo">
@@ -100,7 +72,8 @@ const ModalCad = ({
                 <input
                   type="text"
                   placeholder="(00) 0 0000-0000"
-                  {...register("telefone")}
+                  value={selectedPet?.telefone}
+                  disabled
                 ></input>
               </div>
             </div>
@@ -114,10 +87,10 @@ const ModalCad = ({
                   <div className="divPet">
                     <input
                       type="radio"
-                      {...register("animal")}
                       id="cachorro"
                       value="cachorro"
-                      defaultChecked
+                      checked={selectedPet?.animalD === "cachorro"}
+                      disabled
                     />
                     <label htmlFor="cachorro">Cachorro</label>
                   </div>
@@ -125,9 +98,10 @@ const ModalCad = ({
                   <div className="divPet">
                     <input
                       type="radio"
-                      {...register("animal")}
                       id="gato"
                       value="gato"
+                      checked={selectedPet?.animalD === "gato"}
+                      disabled
                     />
                     <label htmlFor="gato">Gato</label>
                   </div>
@@ -141,7 +115,8 @@ const ModalCad = ({
                 <input
                   type="text"
                   placeholder="Raça"
-                  {...register("raca")}
+                  value={selectedPet?.raca}
+                  disabled
                 ></input>
               </div>
               <div className="campo">
@@ -152,20 +127,22 @@ const ModalCad = ({
                 <input
                   type="date"
                   placeholder="22/07/2020"
-                  {...register("data")}
+                  value={selectedPet?.data}
+                  disabled
                 ></input>
               </div>
             </div>
           </div>
+          <p>Tem certeza que deseja remover esse pet? </p>
 
           <div className="botoes">
             <ButtonBack close={onRequestClose} />
             {button}
           </div>
         </form>
-      
+        {/* form */}
       </div>
     </ReactModal>
   );
 };
-export default ModalCad;
+export default ModalDel;

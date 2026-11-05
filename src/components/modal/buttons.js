@@ -5,7 +5,7 @@ import Editar from "@/assets/icone/editarBranco.svg";
 import Lixeira from "@/assets/icone/lixeira.svg";
 
 import Image from "next/image";
-import "@/pages/componentes/modal/button.css";
+import "@/components/modal/button.css";
 
 export function ButtonBack({ close }) {
   return (
@@ -40,7 +40,7 @@ export function ButtonDelete({ click, id }) {
   return (
     <button
       onClick={() => click(id)}
-      type="submit"
+      type="button"
       name="submit"
       className="buttonDelete"
     >

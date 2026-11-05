@@ -2,11 +2,11 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import React, { useState, useRef } from "react";
-import "@/pages/componentes/principal/style.css";
-import "@/pages/componentes/modal/modal.css";
+import "@/components/principal/style.css";
+import "@/components/modal/modal.css";
 import Image from "next/image";
 import BlocoInfo from "../bloco-info/Bloco";
-import ModalCad from "@/pages/componentes/modal/ModalCad";
+import ModalCad from "@/components/modal/ModalCad";
 
 import Logo from "@/assets/icone/logo.svg";
 import MaisCadastrar from "@/assets/icone/+.svg";
@@ -36,8 +36,8 @@ const principal = ({ getPets, pets, setPets, setOnEdit }) => {
       const res = await axios.get(`http://localhost:8800?search=${searchTerm}`);
       setPets(res.data);
       toast.success(`${searchTerm} encontrado!`);
-    } catch (error) {
-      toast.error(error);
+    } catch {
+      toast.error("Não foi possível pesquisar os pets. Tente novamente.");
     }
   };
 

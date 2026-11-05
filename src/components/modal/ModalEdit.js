@@ -1,20 +1,20 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import "@/components/principal/style.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ReactModal from "react-modal";
-import "@/pages/componentes/principal/style.css";
 import Image from "next/image";
 import Coleira from "@/assets/icone/coleira.svg";
 import User from "@/assets/icone/user.svg";
 import Dna from "@/assets/icone/dna.svg";
 import Telefone from "@/assets/icone/telefone.svg";
 import Idade from "@/assets/icone/idade.svg";
+import "@/components/modal/modal.css";
 import { ButtonBack } from "./buttons";
 
 import close from "@/assets/icone/close.svg";
-import "@/pages/componentes/modal/modal.css";
 const petsCreateSchema = z.object({
   namePet: z.string().min(1, "O nome do pet é obrigatório."),
   nameDono: z.string().min(1, "O nome do dono é obrigatório."),
@@ -46,7 +46,7 @@ const ModalEdit = ({
         onRequestClose();
         toast.success(data);
       })
-      .catch(({ data }) => toast.error(data));
+      .catch(() => toast.error("Não foi possível atualizar o pet. Tente novamente."));
   }
 
   return (

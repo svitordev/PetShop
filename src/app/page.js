@@ -1,7 +1,7 @@
 "use client";
 import "@/app/globals.css";
 import "./page.module.css";
-import Principal from "@/pages/componentes/principal/principal.js";
+import Principal from "@/components/principal/principal.js";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -44,8 +44,8 @@ export default function Home() {
     try {
       const res = await axios.get("http://localhost:8800");
       setPets(res.data.sort((a, b) => (a.nome > b.nome ? -1 : 1)));
-    } catch (error) {
-      toast.error(error);
+    } catch {
+      toast.error("Não foi possível carregar os pets. Tente novamente.");
     }
   };
 
