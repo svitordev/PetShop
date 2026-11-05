@@ -152,7 +152,7 @@ O estado da lista vive em `page.js` e é repassado por props para `principal.js`
 
 | Pacote | Declarado | Resolvido no lockfile |
 |---|---|---|
-| `express` | `^4.19.2` | 4.19.2 |
+| `express` | `^4.22.3` | 4.22.3 |
 | `cors` | `^2.8.5` | 2.8.5 |
 | `mysql` | `^2.18.1` | 2.18.1 |
 | `nodemon` | `^3.1.1` | 3.1.1 |

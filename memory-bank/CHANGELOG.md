@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-11-05 (sessão 12) — SEC-007 — Express 4.22.3 / body-parser 1.20.9 (SOFTPET-014B)
+
+Rodada de **implementação controlada** — somente o gatilho confirmado da SEC-007 (GHSA-27r3-jxmh-p828, DoS em corpos comprimidos). **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: `d594c7a` (HEAD == origin/main), suíte 43/43, stage vazio.
+
+### Executado no workspace real
+
+- `api/package.json`: apenas `express` `^4.19.2` → `^4.22.3` (linha 4.x; sem Express 5, sem `body-parser` direto, sem `overrides`).
+- `api/package-lock.json`: regenerado por `npm install --package-lock-only --ignore-scripts` (exit 0) — `body-parser` **1.20.9**, `qs` 6.16.2, `path-to-regexp` 0.1.13, `cookie` 0.7.2, `send` 0.19.2, `serve-static` 1.16.3; `proxy-addr` 2.0.7 permanece.
+- Efeito colateral: `api/node_modules/.package-lock.json` (gerado, versionado — QLT-007) atualizado pelo comando. `node_modules` real não reinstallado.
+- Sem `npm audit fix`/`npm update`; raiz intacta; nada mais alterado.
+
+### Verificação (cópia isolada, `npm ci` raiz+API exit 0)
+
+- `npm ls`: express 4.22.3 / body-parser 1.20.9 ✓. **Audit depois: GHSA-27r3-jxmh-p828 ausente** ✓ (antes: presente; 11 pacotes → 4; residuais com condição ausente, não corrigidos). Suíte na cópia: **43/43** ✓. Build: **exit 0**, rotas `/` e `/_not-found` ✓. Runtime HTTP real não exercitado (sem banco de teste autorizado).
+
+### Documentos alterados
+
+`SECURITY-AUDIT.md` (SEC-007 → FIXED com escopo, nova §6.8) · `docs/ARQUITETURA.md` (tabela da API) · `memory-bank/CURRENT-STATE.md` · `memory-bank/CHANGELOG.md`. Cópia removida após confirmação de caminho. Sem commit, sem push.
+
+**Próximo item: SEC-005** (não implementado nesta sessão).
+
+---
+
 ## 2026-11-04 (sessão 11) — Normalização do stage e implementação do QLT-002 (SOFTPET-012)
 
 Rodada de **implementação controlada** — dois objetivos: normalizar o stage do `git mv` e implementar o QLT-002. **Execução manual** — skills indisponíveis; nenhuma executada. Pré-flight reconfirido (branch `main`, HEAD `b9fc914`, suíte 43/43, hashes idênticos).

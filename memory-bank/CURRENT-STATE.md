@@ -4,6 +4,39 @@
 
 ---
 
+## SESSÃO 12 — SEC-007 — Express 4.22.3 / body-parser 1.20.9 (SOFTPET-014B)
+
+Rodada de **implementação controlada** — somente o gatilho confirmado da SEC-007 (GHSA-27r3-jxmh-p828). **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: commit `d594c7a` (HEAD == origin/main), suíte 43/43, stage vazio — reconfiridos no pré-flight.
+
+### Implementado no workspace real (somente o autorizado)
+
+- **`api/package.json`:** apenas `express` `^4.19.2` → `^4.22.3` (linha 4.x preservada; sem Express 5, sem `body-parser` direto, sem `overrides`).
+- **`api/package-lock.json`:** regenerado por `npm install --package-lock-only --ignore-scripts` (exit 0). Resolução: `body-parser` **1.20.9** ✓, `qs` 6.16.2, `path-to-regexp` 0.1.13, `cookie` 0.7.2, `send` 0.19.2, `serve-static` 1.16.3; `proxy-addr` permanece 2.0.7.
+- **Efeito colateral registrado:** `api/node_modules/.package-lock.json` (arquivo gerado, mas versionado — QLT-007) foi atualizado pelo comando. `node_modules` real não reinstallado — a evidência da árvore nova é a cópia isolada.
+- **Nada mais alterado:** raiz (manifest/lockfile) intacta; controllers, frontend, CORS, mysql, nodemon intocados. Sem `npm audit fix`.
+
+### Verificação (cópia isolada `%TEMP%\softpet-sec007-s14b`)
+
+- `npm ci` raiz: exit 0 · `npm ci` API: exit 0.
+- `npm ls` na cópia: **express 4.22.3 / body-parser 1.20.9** ✓.
+- **Audit antes** (real): 11 pacotes (1 critical, 6 high, 1 moderate, 3 low), GHSA-27r3-jxmh-p828 presente — SEC-007 reproduzível.
+- **Audit depois** (cópia): **GHSA-27r3-jxmh-p828 não é mais reportado** ✓. Total: 4 pacotes (1 critical, 3 high) — residuais com condição ausente (§6.7.1), não corrigidos automaticamente. **Audit não zerou.**
+- **Suíte na cópia (árvore nova): 43/43**, exit 0 ✓.
+- **Build na cópia: exit 0**; rotas `/` e `/_not-found`; nenhuma `componentes/*` ✓.
+- **Runtime HTTP real não exercitado** — sem banco de teste autorizado (`db.js` legado exigiria MySQL real).
+
+### Documentos alterados nesta rodada
+
+`SECURITY-AUDIT.md` (SEC-007 → FIXED com escopo; nova §6.8) · `docs/ARQUITETURA.md` (tabela da API — linha do express) · `memory-bank/CURRENT-STATE.md` · `memory-bank/CHANGELOG.md`. `QUALITY-REVIEW.md` não alterado (nada mudou materialmente nos findings — QLT-012 permanece como está).
+
+### Limpeza
+
+Cópia temporária removida após confirmação do caminho (fora do repositório). Nenhum processo pendente desta sessão. Verificação final: suíte 43/43 (node_modules antigo — não prova a árvore nova), stage vazio, `git diff --check` 0.
+
+**Estado:** SEC-007 **FIXED com escopo**. Sem commit, sem push (autorização pendente). **Próximo item recomendado: SEC-005** (credenciais no código → variáveis de ambiente — etapa própria do plano, P2; é o achado de segurança aberto mais antigo com ação direta e sem dependência de decisão de produto). Não implementado nesta sessão.
+
+---
+
 ## SESSÃO 11 — Normalização do stage e implementação do QLT-002 (SOFTPET-012)
 
 Rodada de **implementação controlada** — dois objetivos: (1) normalizar o stage deixado pelo `git mv` da SOFTPET-011; (2) implementar exclusivamente o QLT-002. **Execução manual** — skills indisponíveis; nenhuma executada. Pré-flight reconfirido: branch `main`, HEAD `b9fc914`, suíte **43/43**, hashes dos lockfiles idênticos.

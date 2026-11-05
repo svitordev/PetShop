@@ -423,8 +423,8 @@ Nenhum campo tem limite máximo de tamanho nem restrição de formato na API. `t
 
 ### SEC-007 — Dependências com avisos oficiais cuja **condição de disparo está presente** no código
 
-**Estado:** `[!] VULNERABLE` (nível de dependência, confirmado por `npm audit`)
-**Severidade:** **ALTA** — **rederivada nesta revisão** (era MÉDIA). Justificativa em §6.7.2.
+**Estado:** **`FIXED` com escopo** (sessão SOFTPET-014B, 2026-11-05) — o advisory confirmado GHSA-27r3-jxmh-p828 foi corrigido pela atualização **Express 4.x → 4.22.3** (`body-parser` → **1.20.9**). Não `VERIFIED` contra o exploit real (nenhuma requisição malformada foi enviada para derrubar o processo). Evidências em §6.8. **Estado anterior (até 2026-11-04):** `[!] VULNERABLE` (nível de dependência, confirmado por `npm audit`).
+**Severidade:** **ALTA** — **rederivada na revisão de 2026-11-04** (era MÉDIA). Justificativa em §6.7.2.
 **Categoria:** Dependências
 
 **Escopo da análise:** na sessão original, **apenas a API** — a raiz não tinha lockfile. **Isto mudou durante esta revisão:** a raiz passou a ter lockfile e a auditoria dela foi executada (**§7.4**, 19 itens, incluindo `next` e `zod` como diretos). A **análise por advisory da árvore da raiz ainda não foi feita** e é pré-requisito para concluir sobre o frontend.
@@ -510,6 +510,27 @@ Esse advisory solitário é suficiente para mover a severidade do achado, porque
 **Limite desta análise:** a distinção entre condição presente e ausente é feita por **leitura de código e pela descrição dos próprios avisos**. Nenhuma das condições foi comprovada por execução. **Nenhuma vulnerabilidade foi comprovadamente explorada na aplicação** — o que está confirmado é a presença da versão na faixa do aviso e a presença, no código, das condições que o aviso descreve.
 
 **Nenhuma dependência foi atualizada.** Nenhuma correção foi aplicada. A análise de compatibilidade de atualização pertence à etapa própria do plano.
+
+#### 6.8 Resolução do gatilho confirmado (sessão SOFTPET-014B, 2026-11-05)
+
+**Executada a etapa própria autorizada**, limitada à árvore da API: `api/package.json` (`express` `^4.19.2` → `^4.22.3`) e `api/package-lock.json` regenerado por `npm install --package-lock-only --ignore-scripts`. Sem `npm audit fix`, sem `overrides`, sem `body-parser` direto, sem Express 5.
+
+| Evidência | Resultado |
+|---|---|
+| Audit **antes** (lockfile real, rede) | 11 pacotes (1 critical, 6 high, 1 moderate, 3 low); **GHSA-27r3-jxmh-p828 presente** em `body-parser` 1.20.2 (range `< 1.20.9`) — SEC-007 reproduzível |
+| Resolução **depois** (lockfile) | `express` **4.22.3** · `body-parser` **1.20.9** · `qs` 6.16.2 · `path-to-regexp` 0.1.13 · `cookie` 0.7.2 · `send` 0.19.2 · `serve-static` 1.16.3 · `proxy-addr` 2.0.7 (inalterado) |
+| Instalação real (cópia isolada `%TEMP%\softpet-sec007-s14b`, `npm ci` raiz + API, ambos exit 0) | `npm ls`: **express 4.22.3 / body-parser 1.20.9** instalados ✓ |
+| Audit **depois** (cópia, mesma árvore instalada) | **GHSA-27r3-jxmh-p828 não é mais reportado** ✓ — critério específico atendido. Total: 4 pacotes (1 critical, 3 high) |
+| Suíte da API na cópia (árvore nova) | **43/43**, 0 falhas, 0 cancelados, exit 0 ✓ |
+| Build do frontend na cópia | **exit 0**; rotas `/` e `/_not-found`; nenhuma `componentes/*` ✓ |
+
+**Advisories que desapareceram (7 pacotes):** `body-parser` (inclui o alvo GHSA-27r3-jxmh-p828), `express`, `path-to-regexp`, `qs`, `cookie`, `send`, `serve-static` — todos resolvidos pela atualização oficial da linha 4.x do Express.
+
+**Advisories residuais (4 pacotes, todos `fixAvailable: true`, condição de disparo AUSENTE conforme §6.7.1 — não corrigidos automaticamente):** `proxy-addr` 2.0.7 (critical, sem `trust proxy` nem decisão por IP no código), `brace-expansion` 1.1.11, `minimatch` 3.1.2, `picomatch` 2.3.1 (caminho `nodemon`, glob local). **`npm audit` não zerou** — e não era esse o critério.
+
+**Não `VERIFIED` contra o exploit real:** runtime HTTP real não exercitado (o `db.js` legado exigiria o MySQL real — sem banco de teste autorizado nesta etapa). A compatibilidade dos controllers fica coberta pela suíte unitária com a árvore nova.
+
+**Limite:** o `node_modules` do workspace real não foi reinstallado (só o lockfile); a evidência da árvore nova é a cópia isolada. O arquivo gerado `api/node_modules/.package-lock.json` (versionado — QLT-007) foi atualizado como efeito colateral do comando autorizado.
 
 ---
 
