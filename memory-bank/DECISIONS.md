@@ -15,10 +15,10 @@ Fatos verificados por leitura de arquivos deste repositório. **Não são decis�
 | F3 | As bibliotecas de MongoDB do `package.json` da raiz não são importadas por nenhum arquivo `.js`. | busca em `src/**` |
 | F4 | A raiz **passou a ter** `package-lock.json` (278.708 bytes, `lockfileVersion: 3`) e `node_modules` — ambos **não rastreados**. `api/package-lock.json` existe. **Esta linha substitui a redação anterior, que dizia que a raiz não possuía lockfile.** | `git status --porcelain` + `git ls-files --others --exclude-standard`, nesta rodada |
 | F5 | `.next/` (162 arquivos) e `api/node_modules/` (936 arquivos) estão versionados. | `git ls-files` |
-| F6 | O `.gitignore` da raiz contém apenas `/node_modules`. | `.gitignore` |
+| F6 | O `.gitignore` da raiz contém `/node_modules` e, desde a SOFTPET-015 (2026-11-05), `.env`, `.env.*` e `!.env.example`. **Esta linha substitui a redação anterior, que dizia apenas `/node_modules`.** | `.gitignore` |
 | F7 | `next.config.mjs` não define `pageExtensions`. | `next.config.mjs` |
 | F8 | `Form.js`, `SearchFilter.js` e `buttons.js` não têm exportação padrão. | `grep export default` |
-| F9 | A conexão do banco usa valores fixos no código, sem variáveis de ambiente. | `api/db.js` |
+| F9 | A conexão do banco era feita com valores fixos no código, sem variáveis de ambiente. **Desde a SOFTPET-015 (2026-11-05), a configuração é lida exclusivamente do ambiente (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`) via `api/config/database.js`; os literais saíram do código atual.** A credencial antiga permanece no histórico Git. **Esta linha substitui a redação anterior.** | `api/db.js`, `api/config/database.js` |
 | F10 | A URL da API está fixa em 6 arquivos do frontend. | busca por `localhost:8800` |
 | F11 | A busca interpola o valor do usuário diretamente na string SQL. | `api/controllers/pet.js` |
 | F12 | Erros do driver são devolvidos com `res.json(err)`, sem status de erro. | `api/controllers/pet.js` |
@@ -65,8 +65,9 @@ Decisões de **processo**, tomadas nesta sessão. Nenhuma decisão técnica de s
 | D5 | Os relatórios formais `SECURITY-AUDIT.md` e `QUALITY-REVIEW.md` serão produzidos nas etapas próprias, não agora. | Planejamento |
 | D6 | A FASE 2 foi executada manualmente, pois a skill `project-bootstrap` não está instalada neste ambiente. | Esta sessão |
 | D7 | Componentes compartilhados ficam **fora das convenções de roteamento** `app`/`pages`. O local atual escolhido é `src/components/` (movido de `src/pages/componentes/` na sessão SOFTPET-011, 2026-11-04; organização interna preservada). Decisão factual desta sessão — sem justificativa histórica. | `src/components/` |
+| D8 | **A configuração de banco não pertence ao código-fonte.** `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_NAME` são fornecidas pelo **ambiente de execução**, sem fallback embutido. Para a futura versão comercial, o instalador/launcher será o responsável por fornecer essa configuração; o mecanismo exato ainda será definido. Decisão factual da sessão SOFTPET-015 (2026-11-05). | `api/config/database.js`, `api/.env.example` |
 
-**Nenhuma decisão técnica foi tomada sobre:** banco de dados, ORM, framework, biblioteca de estilos, plugin de build ou autenticação. **Estrutura de pastas:** decidida na SOFTPET-011 — ver D7.
+**Nenhuma decisão técnica foi tomada sobre:** banco de dados (motor — a migração para PostgreSQL segue proposta P15), ORM, framework, biblioteca de estilos, plugin de build ou autenticação. **Estrutura de pastas:** decidida na SOFTPET-011 — ver D7. **Configuração de banco (fonte dos valores, não o motor):** decidida na SOFTPET-015 — ver D8.
 
 > **Nota desta rodada:** as propostas P15 a P24 nasceram do planejamento comercial e **continuam propostas** — nenhuma foi aprovada. O detalhamento está em `docs/PLANO-COMERCIAL-LOCAL.md`. Esta seção continua valendo como estava.
 

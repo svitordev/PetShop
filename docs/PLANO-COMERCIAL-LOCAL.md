@@ -44,9 +44,9 @@ Não há ORM, camada de serviço, repositório ou injeção de dependência: o c
 
 ### 2.3 Integração MySQL existente
 
-`api/db.js` **[VERIFICADO]** — uma **única conexão** (`createConnection`, não pool), com host, usuário, senha e database como **literais no código**. Nenhum arquivo `.env` no repositório, nenhuma leitura de `process.env` no código. Os valores não são reproduzidos neste documento.
+`api/db.js` — uma **única conexão** (`createConnection`, não pool). **Estado alterado na SOFTPET-015 (2026-11-05):** os literais saíram do código atual; a conexão passou a ler `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_NAME` do ambiente via `api/config/database.js`, com `.gitignore` cobrindo `.env` e `api/.env.example` documentando os nomes. Os valores não são reproduzidos neste documento. A credencial antiga continua no histórico Git — rotação operacional pendente (SEC-005).
 
-Consequência direta para o objetivo comercial: **uma instalação em outra máquina não funciona sem editar código-fonte.** **[VERIFICADO]**
+Consequência direta para o objetivo comercial: **a configuração por instalação agora possui base técnica** (variáveis de ambiente obrigatórias, sem fallback). A geração das credenciais pelo instalador continua futura — **não existe instalador hoje**.
 
 ### 2.4 MongoDB / Mongoose — utilização real
 
@@ -228,7 +228,7 @@ Para as estações há uma segunda dependência: **a rede local**. Sem rede loca
 | Frontend | `next dev` | build de produção servido por processo gerenciado |
 | API | `nodemon index.js` | processo gerenciado, sem *watch* |
 | Banco | instância local de trabalho | servidor instalado no estabelecimento |
-| Configuração | valores no código (situação atual, **[VERIFICADO]**) | arquivo de configuração por instalação |
+| Configuração | variáveis de ambiente via `api/config/database.js` (desde a SOFTPET-015; ver §2.3) | arquivo de configuração por instalação |
 | Ferramenta de desenvolvimento | necessária | **não deve ser necessária** |
 
 **Nota de coerência:** hoje o único script `start` da API é `nodemon index.js` — ou seja, o modo de produção do projeto **usa o observador de arquivos de desenvolvimento**. Isso está registrado em `SECURITY-AUDIT.md` §6.7.1 e precisa ser desfeito na etapa de atualização.

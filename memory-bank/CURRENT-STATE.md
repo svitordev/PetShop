@@ -1,6 +1,40 @@
 # CURRENT-STATE.md — Estado atual
 
-**Data da sessão:** 2026-11-04
+**Data da sessão:** 2026-11-05
+
+---
+
+## SESSÃO 13 — SEC-005 — configuração de banco por ambiente (SOFTPET-015)
+
+Rodada de **implementação controlada** — exclusivamente a SEC-005. **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: commit `70e5730` (HEAD == origin/main), suíte 43/43, stage vazio — reconfiridos no pré-flight.
+
+### Implementado no workspace real (somente o autorizado)
+
+- **`api/config/database.js`** (novo): `readDatabaseConfig(env)` — valida e retorna somente `{ host, user, password, database }` de `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Ausente/`""` → erro listando **apenas nomes**. Sem coerções, sem fallback, sem dependência nova.
+- **`api/db.js`**: `mysql.createConnection(readDatabaseConfig(process.env))` — literais removidos; sem `db.connect()` nesta rodada.
+- **`api/.env.example`** (novo): placeholders `CHANGE_ME` — nenhum valor real.
+- **`.gitignore`**: adicionadas `.env`, `.env.*`, `!.env.example` (alcançam raiz e `api/` — `git check-ignore` confirmado).
+- **`api/package.json`**: script `test` passou a incluir `test/databaseConfig.test.js`. Dependências e `start` intactos.
+- **`api/test/databaseConfig.test.js`** (novo): 10 casos — contrato puro (9) + integração `db.js` com `mysql` mockado (sem socket, sem servidor; ambiente fictício restaurado no final).
+
+### Verificação
+
+- **Suíte no workspace: 53/53** (43 anteriores + 10 novos), 0 cancelados, exit 0 ✓.
+- **Cópia isolada `%TEMP%\softpet-sec005-s15`**: `npm ci` raiz exit 0 · `npm ci` API exit 0 · suíte **53/53** ✓ · build **exit 0** ✓.
+- **Start sem configuração** (cópia, `node index.js` sem as quatro variáveis): **exit 1**, mensagem lista os quatro nomes, nenhum segredo impresso, **nenhuma tentativa de conexão** ✓.
+- **Verificação de segredo** (valores comparados em memória, não exibidos): `api/db.js` atual sem literais ✓; arquivos novos sem os valores antigos ✓; `.env.example` somente placeholders ✓. As menções encontradas na documentação são **pré-existentes** (já estavam no HEAD — a maioria é coincidência de substring em palavras comuns).
+
+### Registros explícitos
+
+- **Remoção do código atual não remove exposição histórica** — a credencial antiga continua no histórico Git e no remoto público.
+- **Rotação da credencial publicada: PENDENTE** — ação operacional própria; não conectamos ao banco real, não alteramos senha, não presumimos validade atual. Se o MySQL for descartado pela migração para PostgreSQL, a credencial antiga continua comprometida enquanto houver serviço que a aceite.
+- Decisão duradoura registrada: **D8** em `DECISIONS.md` (configuração de banco não pertence ao código-fonte). Fatos F6/F9 atualizados.
+
+### Documentos alterados nesta rodada
+
+`SECURITY-AUDIT.md` (SEC-005 → FIXED com escopo; nova §6.5.1; resumo §4 corrigido) · `docs/ARQUITETURA.md` (§4 e §8) · `docs/PLANO-COMERCIAL-LOCAL.md` (§2.3 e tabela de comparação) · `README.md` (instrução de desenvolvimento) · `memory-bank/DECISIONS.md` (D8; F6/F9) · `memory-bank/CURRENT-STATE.md` · `memory-bank/CHANGELOG.md`. `QUALITY-REVIEW.md` não alterado.
+
+**Estado:** SEC-005 **FIXED com escopo**; rotação da credencial PENDENTE. Sem commit, sem push (autorização pendente). **Próximo item recomendado: QLT-011** (URL da API configurável — agora é pré-requisito direto da rede local; ver §28 do plano de sessão). Não implementado nesta sessão.
 
 ---
 

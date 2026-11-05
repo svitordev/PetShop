@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "node --test --experimental-test-module-mocks test/getPets.test.js test/petErrors.test.js"
+    "test": "node --test --experimental-test-module-mocks test/getPets.test.js test/petErrors.test.js test/databaseConfig.test.js"
   },
   "keywords": [],
   "author": "",

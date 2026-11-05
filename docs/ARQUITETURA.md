@@ -87,9 +87,9 @@ Em todos os controllers, o erro do driver é devolvido com `res.json(err)` — *
 
 ## 4. Persistência
 
-`api/db.js` cria **uma única conexão** (`mysql.createConnection`) com host, usuário, senha e nome do database definidos como **valores fixos no código**. Não há `.env` versionado nem leitura de `process.env`.
+`api/db.js` cria **uma única conexão** (`mysql.createConnection`) com a configuração obtida **exclusivamente do ambiente de execução**: `process.env` → `readDatabaseConfig` (`api/config/database.js`) → `mysql.createConnection`. As quatro variáveis obrigatórias são `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_NAME`; a ausência ou string vazia de qualquer delas faz o processo **falhar antes de construir a conexão**, com mensagem listando apenas os nomes. Sem fallback embutido. `api/.env.example` documenta os nomes com placeholders; `.env` está fora do versionamento e **não é carregado automaticamente** pelo aplicativo — o carregamento é responsabilidade do processo de execução/launcher. Implementado na sessão SOFTPET-015 (2026-11-05); decisão registrada como D8 em `memory-bank/DECISIONS.md`.
 
-Os valores de credencial não são reproduzidos neste documento.
+Os valores de credencial não são reproduzidos neste documento. A rotação da credencial historicamente publicada permanece ação operacional pendente (SEC-005).
 
 ### 4.1. Campos usados nas queries × schema conhecido
 
@@ -187,7 +187,7 @@ O estado da lista vive em `page.js` e é repassado por props para `principal.js`
 São apenas propostas, a confirmar antes de executar:
 
 - Centralizar a URL da API em um único módulo de configuração, para eliminar as seis ocorrências repetidas.
-- Definir a conexão do banco por variáveis de ambiente, com `.env` fora do versionamento e `.env.example` documentando os nomes.
+- ~~Definir a conexão do banco por variáveis de ambiente, com `.env` fora do versionamento e `.env.example` documentando os nomes.~~ **Implementado na SOFTPET-015** (2026-11-05) — ver §4 e decisão D8 no `memory-bank/DECISIONS.md`.
 - ~~Avaliar se `src/pages/componentes/` deve permanecer sob a convenção de rotas do Pages Router ou ser movida para fora de `src/pages`.~~ **Implementado na SOFTPET-011** — a árvore foi movida para `src/components/` (decisão D7 no `memory-bank/DECISIONS.md`; estado atual na §2.2).
 - Registrar o DDL da tabela `pets` no repositório, para que o schema deixe de ser inferido apenas pelas queries.
 - Considerar `mysql.createPool()` no lugar de `createConnection()` quando houver concorrência real.

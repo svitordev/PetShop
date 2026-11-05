@@ -111,7 +111,7 @@ Procedimento **identificado a partir dos arquivos** e **não executado** nesta e
 2. Em `api/`, instalar dependências e iniciar: `npm install` e `npm start` (porta 8800).
 3. Na raiz, instalar dependências e iniciar: `npm install` e `npm run dev` (porta 3000).
 
-Os valores de conexão ficam fixos em `api/db.js` (host, usuário, senha e nome do database). Não há arquivo `.env` versionado nem leitura de variáveis de ambiente no código.
+A conexão com o banco é configurada **exclusivamente por variáveis de ambiente**, todas obrigatórias: `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_NAME`. Sem elas (ou com alguma vazia/`""`), a API **falha ao iniciar**, antes de qualquer consulta, listando apenas os nomes ausentes. `api/.env.example` documenta os nomes com placeholders — `.env` está fora do versionamento e **não é carregado automaticamente** pelo aplicativo; quem carrega o ambiente é o processo de execução/launcher/instalador.
 
 ---
 

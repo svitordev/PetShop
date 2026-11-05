@@ -1,8 +1,6 @@
 import mysql from "mysql";
+import { readDatabaseConfig } from "./config/database.js";
 
-export const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "admin",
-  database: "petscrud",
-});
+// Sem fallback: configuração ausente/inválida falha aqui, antes de qualquer
+// consulta. Os valores vêm exclusivamente do ambiente de execução (SEC-005).
+export const db = mysql.createConnection(readDatabaseConfig(process.env));

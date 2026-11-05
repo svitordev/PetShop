@@ -4,6 +4,37 @@
 
 ---
 
+## 2026-11-05 (sessão 13) — SEC-005 — configuração de banco por ambiente (SOFTPET-015)
+
+Rodada de **implementação controlada** — exclusivamente a SEC-005. **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: `70e5730` (HEAD == origin/main), suíte 43/43, stage vazio.
+
+### Executado no workspace real
+
+- `api/config/database.js` (novo): `readDatabaseConfig(env)` — valida e retorna `{ host, user, password, database }` de `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`; ausente ou `""` → erro com **apenas nomes**; sem coerções, sem fallback.
+- `api/db.js`: `mysql.createConnection(readDatabaseConfig(process.env))` — literais removidos; sem `db.connect()`.
+- `api/.env.example` (novo): placeholders `CHANGE_ME`.
+- `.gitignore`: `.env`, `.env.*`, `!.env.example` (alcance confirmado por `git check-ignore`).
+- `api/package.json`: script `test` inclui `test/databaseConfig.test.js`. Sem dependência nova; `start` intacto.
+- `api/test/databaseConfig.test.js` (novo): 10 casos — contrato puro + integração com `mysql` mockado (sem socket; ambiente restaurado).
+
+### Verificação
+
+- Suíte no workspace: **53/53** ✓. Cópia isolada (`npm ci` raiz+API exit 0): suíte **53/53** ✓, build **exit 0** ✓.
+- Start sem configuração (cópia): **exit 1**, mensagem lista os quatro nomes, sem segredo impresso, sem tentativa de conexão ✓.
+- Verificação de segredo sem imprimir valores: `db.js` sem literais ✓; arquivos novos limpos ✓; `.env.example` só placeholders ✓; menções na documentação são pré-existentes no HEAD.
+
+### Registros explícitos
+
+**Remoção do código atual não remove exposição histórica.** **Rotação da credencial publicada: PENDENTE** (ação operacional própria; nenhuma conexão ao banco real foi feita). Decisão **D8** registrada em `DECISIONS.md`; fatos F6/F9 atualizados.
+
+### Documentos alterados
+
+`SECURITY-AUDIT.md` (SEC-005 → FIXED com escopo; nova §6.5.1; resumo §4) · `docs/ARQUITETURA.md` · `docs/PLANO-COMERCIAL-LOCAL.md` · `README.md` · `memory-bank/DECISIONS.md` · `memory-bank/CURRENT-STATE.md` · `memory-bank/CHANGELOG.md`. Cópia removida após confirmação de caminho. Sem commit, sem push.
+
+**Próximo item: QLT-011** (não implementado nesta sessão).
+
+---
+
 ## 2026-11-05 (sessão 12) — SEC-007 — Express 4.22.3 / body-parser 1.20.9 (SOFTPET-014B)
 
 Rodada de **implementação controlada** — somente o gatilho confirmado da SEC-007 (GHSA-27r3-jxmh-p828, DoS em corpos comprimidos). **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: `d594c7a` (HEAD == origin/main), suíte 43/43, stage vazio.

@@ -107,7 +107,7 @@ Porque a ordem de confiança coloca **o código atual em primeiro lugar**, as af
 | **BAIXA** | 1 | SEC-003 |
 | **N/A** | 3 | N/A-1 a N/A-3 |
 
-**SEC-001 foi corrigida** na sessão SOFTPET-006 (2026-11-04, §7.6) e **SEC-002 foi corrigida** na sessão SOFTPET-007 (2026-11-04, §7.7) — ambas implementadas e verificadas por **testes unitários com banco simulado**, não ponta a ponta. **Nenhum outro achado foi corrigido**, e nenhum foi marcado como `VERIFIED`.
+**SEC-001 foi corrigida** na sessão SOFTPET-006 (2026-11-04, §7.6) e **SEC-002 foi corrigida** na sessão SOFTPET-007 (2026-11-04, §7.7) — ambas implementadas e verificadas por **testes unitários com banco simulado**, não ponta a ponta. **SEC-007 foi corrigida com escopo** na sessão SOFTPET-014B (2026-11-05, §6.8) e **SEC-005 foi corrigida com escopo** na sessão SOFTPET-015 (2026-11-05, §6.5.1) — nenhuma marcada como `VERIFIED`; a **rotação da credencial da SEC-005 permanece PENDENTE**. Nenhum outro achado foi corrigido.
 
 **Mudança nesta revisão:** a **SEC-007 subiu de MÉDIA para ALTA**. A justificativa está no corpo da SEC-007 (§6) e decorre da análise por advisory — há pelo menos um advisory **high** cujas condições de disparo **estão presentes** no código atual. A severidade anterior (MÉDIA) tinha sido atribuída antes dessa análise e foi rederivada, e não preservada por inércia.
 
@@ -335,7 +335,7 @@ Nenhum campo tem limite máximo de tamanho nem restrição de formato na API. `t
 
 ### SEC-005 — Credenciais de conexão com valores fixos no código
 
-**Estado:** `[!] VULNERABLE`
+**Estado:** **`FIXED` com escopo** (sessão SOFTPET-015, 2026-11-05) — os literais foram removidos do código atual; a configuração passou a vir exclusivamente do ambiente de execução; `.env` foi coberto pelo `.gitignore`; `api/.env.example` criado com placeholders; suíte ampliada para **53/53**. **Não `VERIFIED` operacionalmente.** **Estado anterior (até 2026-11-05):** `[!] VULNERABLE`.
 **Severidade:** **MÉDIA**
 **Categoria:** Secrets / configuração
 
@@ -381,6 +381,28 @@ Nenhum campo tem limite máximo de tamanho nem restrição de formato na API. `t
 **Menor correção proposta:** ler os quatro valores de variáveis de ambiente, criar `.env.example` com placeholders (nomes apenas) e adicionar `.env` ao `.gitignore`. **A substituição da credencial no servidor passa a ser recomendada de forma ativa**, dado que o repositório é público.
 
 **Testes de regressão necessários:** subir a API com e sem as variáveis definidas e conferir a mensagem de falha.
+
+#### 6.5.1 Resolução (sessão SOFTPET-015, 2026-11-05)
+
+**Executada a menor correção proposta**, exatamente no escopo dela. Nenhum valor de credencial foi impresso em diff, documentação ou saída de ferramenta — apenas os **nomes** das variáveis são referidos.
+
+| Item | Evidência |
+|---|---|
+| Contrato centralizado | `api/config/database.js` — `readDatabaseConfig(env)` valida e retorna somente `{ host, user, password, database }` obtidos de `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`. Sem porta, SSL, pool, timezone ou coerções — o contrato é apenas este. |
+| `api/db.js` | `mysql.createConnection(readDatabaseConfig(process.env))` — **sem fallback** para os valores antigos. |
+| Falha explícita | Variável ausente ou string vazia → erro antes de construir a conexão, listando **apenas os nomes**. Sem dump de `process.env`. |
+| `.gitignore` | Adicionadas `.env`, `.env.*`, `!.env.example` — alcançam a raiz e `api/` (confirmado por `git check-ignore -v`). |
+| `api/.env.example` | Criado com placeholders (`CHANGE_ME`) — nenhum valor real. |
+| Testes | `api/test/databaseConfig.test.js` — 10 casos (contrato puro + integração `db.js` com `mysql` mockado, sem socket). Suíte: **53/53** (43 anteriores + 10 novos), 0 cancelados. |
+| Start sem configuração (cópia isolada) | `node index.js` sem as quatro variáveis: **exit 1**, mensagem lista os quatro nomes, nenhum segredo impresso, **nenhuma tentativa de conexão**. |
+| Cópia isolada (`%TEMP%\softpet-sec005-s15`) | `npm ci` raiz exit 0 · `npm ci` API exit 0 · suíte **53/53** · build **exit 0**. |
+| Dependências | **Nenhuma instalada** — o código trabalha com `process.env` nativo. O carregamento de `.env` é responsabilidade do processo de execução/launcher/instalador (o script `start` não foi alterado — não misturar com QLT-012). |
+
+**Registros explícitos desta resolução:**
+
+- **Remoção do código atual não remove exposição histórica.** A credencial antiga continua no histórico do Git e no remoto público.
+- **Rotacionar/substituir a credencial publicada antes de qualquer uso real — ação operacional PENDENTE.** Se o banco MySQL atual for descartado pela migração para PostgreSQL, a antiga credencial MySQL ainda deve ser considerada comprometida enquanto houver serviço que a aceite.
+- Validade atual da credencial e alcançabilidade do banco continuam **NÃO VERIFICADO** (itens 2 e 3 acima).
 
 ---
 
