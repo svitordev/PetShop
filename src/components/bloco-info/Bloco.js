@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "@/config/api";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import "@/components/bloco-info/bloco.css";
@@ -105,7 +106,7 @@ const blocoInfo = ({
   }
   async function handleDelete(i) {
     try {
-      const { data } = await axios.delete("http://localhost:8800/" + i);
+      const { data } = await axios.delete(apiUrl(`/${i}`));
 
       toast.success(data);
       await getPets();

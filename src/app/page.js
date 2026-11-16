@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styled from 'styled-components';
 
 import axios from "axios";
+import { apiUrl } from "@/config/api";
 
 import { Ubuntu } from "next/font/google";
 import "./globals.css";
@@ -42,7 +43,7 @@ export default function Home() {
 
   const getPets = async () => {
     try {
-      const res = await axios.get("http://localhost:8800");
+      const res = await axios.get(apiUrl());
       setPets(res.data.sort((a, b) => (a.nome > b.nome ? -1 : 1)));
     } catch {
       toast.error("Não foi possível carregar os pets. Tente novamente.");

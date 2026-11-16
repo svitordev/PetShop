@@ -6,6 +6,7 @@ import Dna from "@/assets/icone/dna.svg";
 import Telefone from "@/assets/icone/telefone.svg";
 import Idade from "@/assets/icone/idade.svg";
 import Image from "next/image";
+import { apiUrl } from "@/config/api";
 import {
   ButtonBack,
   ButtonSave,
@@ -54,7 +55,7 @@ export function Form({
     }
     if (onEdit) {
       await axios
-        .put("http://localhost:8800/" + onEdit.id, {
+        .put(apiUrl(`/${onEdit.id}`), {
           namePet: pet.namePet.value,
           nameDono: pet.nameDono.value,
           telefone: pet.telefone.value,

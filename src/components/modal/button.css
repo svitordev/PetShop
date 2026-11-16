@@ -15,7 +15,8 @@
   background-color: var(--color-light);
 }
 .buttonSalvar{
-  background-image: var(--background-light);
+  background-image: linear-gradient(63deg, #006BDC, #0046BA 70%);
+  color: #FFFFFF;
 }
 .buttonSalvar,
 .buttonDelete{
@@ -23,7 +24,8 @@
   font-size: 0.9rem;
 }
 .buttonDelete{
-  background-color: #ED254E;
+  background-color: #E01F47;
+  color: #FFFFFF;
 }
 .mais{
   height: 19px;

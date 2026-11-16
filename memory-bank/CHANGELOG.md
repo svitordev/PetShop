@@ -4,6 +4,34 @@
 
 ---
 
+## 2026-11-05 (sessão 14) — QLT-011 — URL da API configurável em runtime (SOFTPET-016)
+
+Rodada de **implementação controlada** — exclusivamente o QLT-011 (pré-requisito de rede da H5/P17). **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: `77be511` (HEAD == origin/main), suíte 53/53, stage vazio.
+
+### Executado no workspace real
+
+- `public/softpet-config.js` (novo): `window.__SOFTPET_CONFIG__ = { API_BASE_URL: "" }` — servido em runtime, editável sem rebuild; vazio = resolução automática; valor explícito tem prioridade; sem segredos.
+- `src/config/api.js` (novo): `resolveApiBaseUrl`/`joinUrl` (funções puras) + `getApiBaseUrl`/`apiUrl`; resolução só na chamada (nunca no import); prioridade: override → `protocol + hostname + :8800`; barra final normalizada; porta 8800 centralizada aqui.
+- `src/app/layout.js`: `next/script` com `strategy="beforeInteractive"` carregando o config.
+- **6 call sites** passaram a `apiUrl()` (`page.js`, `principal.js`, `Bloco.js`, `Form.js`, `ModalCad.js`, `ModalEdit.js`); busca final: **0** ocorrências de `localhost:8800` em `src/`.
+- `api/package.json`: script `test` inclui `test/apiConfig.test.js`. `api/test/apiConfig.test.js` (novo): 10 testes de funções puras, valores fictícios.
+- Backend, CORS, banco, autenticação, manifests e lockfiles intactos. `Form.js` recebeu apenas a troca de URL (achado pré-existente: sem importador, `axios` não importado — não corrigido, fora de escopo).
+
+### Verificação
+
+- Suíte no workspace: **63/63** (53 anteriores + 10 novos) ✓. Cópia isolada (`npm ci` exit 0): build **exit 0** ✓.
+- Navegador com **mock HTTP próprio** (8800/18800, log de `Host`; intercepção por rota instável nesta sessão): **A** `localhost:3001` → mock recebeu `Host=localhost:8800` ✓; **B** `127.0.0.1:3001` → `Host=127.0.0.1:8800` (prova principal — hostname do acesso, não literal) ✓; **C** override no arquivo da cópia **sem rebuild** → chamadas no mock 18800, nada no 8800, barra final normalizada ✓.
+- Smoke CRUD no navegador: listagem, busca (`GET /?search=`), expandir card, abrir edição/exclusão/cadastro — nenhuma chamada presa a `localhost` literal ✓.
+- Frontend da cópia em `next start -p 3001` (porta 3000 ocupada por processo externo preexistente — não interferiu na prova: a derivação do hostname independe da porta do frontend).
+
+### Documentos alterados
+
+`QUALITY-REVIEW.md` (QLT-011 → FIXED; totais 12 abertos; §7, §9, nova §13) · `docs/ARQUITETURA.md` (§1, §2.1, nova §2.4, §7, §8) · `docs/PLANO-COMERCIAL-LOCAL.md` (§2.2, §2.5, §2.6, §6.3, etapa 7 — ajustes factuais) · `README.md` (URL da API) · `memory-bank/DECISIONS.md` (D9; P3/P17) · `memory-bank/CURRENT-STATE.md` · `memory-bank/CHANGELOG.md`.
+
+**Estado:** QLT-011 **FIXED** (não `VERIFIED` — não testado em duas máquinas físicas reais). Sem stage, sem commit, sem push. **Próximo item recomendado:** avaliar entre SEC-004, QLT-004, QLT-006, QLT-007, QLT-008 (a migração PostgreSQL futura pode esvaziar o QLT-008 — não investir excessivamente no driver MySQL legado). Não implementado automaticamente.
+
+---
+
 ## 2026-11-05 (sessão 13) — SEC-005 — configuração de banco por ambiente (SOFTPET-015)
 
 Rodada de **implementação controlada** — exclusivamente a SEC-005. **Execução manual** — skills indisponíveis; nenhuma executada. Baseline: `70e5730` (HEAD == origin/main), suíte 43/43, stage vazio.

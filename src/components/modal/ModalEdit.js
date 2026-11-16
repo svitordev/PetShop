@@ -3,6 +3,7 @@ import { z } from "zod";
 import "@/components/principal/style.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { apiUrl } from "@/config/api";
 import { toast } from "react-toastify";
 import ReactModal from "react-modal";
 import Image from "next/image";
@@ -40,7 +41,7 @@ const ModalEdit = ({
   });
   async function handleUpdate(dados) {
     await axios
-      .put("http://localhost:8800/" + item.id, dados)
+      .put(apiUrl(`/${item.id}`), dados)
       .then(({ data }) => {
         getPets();
         onRequestClose();

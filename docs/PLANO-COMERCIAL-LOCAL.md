@@ -38,7 +38,7 @@ Tudo nesta seção foi lido em arquivo nesta rodada.
 
 ### 2.2 Fluxo entre interface, API e banco
 
-`src/app/page.js` e `src/pages/componentes/**` chamam a API via **Axios com URL absoluta fixa** → `api/index.js` monta `express.json()` e `cors()` sem restrição → rotas em `api/routes/pets.js` → controllers em `api/controllers/pet.js` → driver `mysql`.
+`src/app/page.js` e os componentes chamam a API via **Axios com URL resolvida em runtime** (centralizada em `src/config/api.js` com override por `public/softpet-config.js` — implementado na SOFTPET-016, 2026-11-05; ver `docs/ARQUITETURA.md` §2.4) → `api/index.js` monta `express.json()` e `cors()` sem restrição → rotas em `api/routes/pets.js` → controllers em `api/controllers/pet.js` → driver `mysql`.
 
 Não há ORM, camada de serviço, repositório ou injeção de dependência: o controller chama o driver diretamente. **[VERIFICADO]**
 
@@ -70,7 +70,7 @@ Ou seja: `mongodb`, `mongoose`, `snappy`, `@mongodb-js/zstd`, `mongodb-client-en
 
 - Rotas da API: `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — nenhuma com middleware. **[VERIFICADO]**
 - Componentes compartilhados vivem em `src/pages/componentes/`, que **participa da convenção de roteamento** do Pages Router, já que `next.config.mjs` não define `pageExtensions`. **[VERIFICADO]**
-- `Form.js` é importado por `Bloco.js` e contém chamadas `PUT` para `localhost:8800/:id`. **[VERIFICADO]**
+- `Form.js` é importado por `Bloco.js` e contém chamada `PUT` para `/:id` via `apiUrl()` (URL centralizada — SOFTPET-016). **[VERIFICADO]** *Divergência já registrada no `QUALITY-REVIEW.md`: o código atual não confirma o import por `Bloco.js` — o código vence.*
 
 ### 2.6 Configurações fixas que impedem instalação em outra máquina ou uso pela rede
 
@@ -78,11 +78,11 @@ Ou seja: `mongodb`, `mongoose`, `snappy`, `@mongodb-js/zstd`, `mongodb-client-en
 |---|---|---|---|
 | 1 | Credenciais do banco como literais | `api/db.js` | Trocar de máquina exige editar código |
 | 2 | Porta `8800` sem variável de ambiente | `api/index.js` | Sem forma de configurar por instalação |
-| 3 | URL da API absoluta e repetida em **6 arquivos** | `page.js`, `principal.js`, `Bloco.js`, `Form.js`, `ModalCad.js`, `ModalEdit.js` | **[VERIFICADO]** Uma estação acessando pelo navegador resolveria `localhost` **para a própria estação** — a API nunca seria alcançada |
+| 3 | URL da API absoluta e repetida em **6 arquivos** | `page.js`, `principal.js`, `Bloco.js`, `Form.js`, `ModalCad.js`, `ModalEdit.js` | **[RESOLVIDO — SOFTPET-016]** Centralizada em `src/config/api.js` com override de runtime e fallback pelo hostname acessado; a estação passa a chamar a API no host por onde acessa a aplicação. Verificado em navegador com mock (localhost/127.0.0.1/override sem rebuild — `QUALITY-REVIEW.md` §13); teste em duas máquinas físicas continua requisito de piloto |
 | 4 | `cors()` sem restrição de origem | `api/index.js` | Sem noção de "quem pode chamar" |
 | 5 | Fonte via `next/font/google` | `layout.js`, `page.js` | **[VERIFICADO]** O download acontece em **build**; em runtime a fonte já está auto-hospedada — ver §6.4 |
 
-**A linha 3 é o ponto que decide a arquitetura de rede.** Sem resolvê-la, "outras estações acessam pela rede local" não funciona, independentemente do banco.
+**A linha 3 é o ponto que decide a arquitetura de rede.** Sem resolvê-la, "outras estações acessam pela rede local" não funciona, independentemente do banco. **Estado atual:** resolvida na SOFTPET-016 (2026-11-05) — a base técnica existe; a estação usa o hostname/IP do computador principal; o teste em duas máquinas físicas continua requisito de piloto.
 
 ---
 
@@ -185,7 +185,7 @@ flowchart LR
 | Uso por outra estação da rede local | Navegador da estação abre a aplicação **servida pelo computador principal** | A URL da API **não pode** ser `localhost` — ver §2.6 linha 3 |
 | Sem internet | Tudo já roda local | Ver §6.4 |
 
-**[PROPOSTA] — resolver a URL da API com configuração em tempo de execução**, num único módulo, consumido pelos 6 pontos hoje hardcoded. É a proposta P3 já registrada em `memory-bank/DECISIONS.md`, e aqui ela deixa de ser conveniência e passa a ser **pré-requisito funcional** para a H5.
+**[IMPLEMENTADO — SOFTPET-016, 2026-11-05]** A URL da API foi resolvida com **configuração em tempo de execução**, num único módulo (`src/config/api.js` + `public/softpet-config.js`), consumido pelos 6 pontos antes hardcoded. Era a proposta P3/P17 registrada em `memory-bank/DECISIONS.md` (decisão D9); deixou de ser conveniência e passou a pré-requisito funcional da H5. Verificado em navegador com mock; duas máquinas físicas continuam pendentes.
 
 Alternativa registrada, mais simples operacionalmente mas com custo de build: servir o *frontend* a partir da própria API, num único processo e origem única, para que as chamadas possam usar caminho relativo. **Não é a recomendada** porque mexe no build do Next.js sem necessidade demonstrada agora.
 
@@ -547,7 +547,7 @@ Ordem ajustada onde há dependência técnica real. Cada etapa tem objetivo, pr�
 | **Entregas** | Instalação piloto em uso; relatório dos critérios de §12 |
 | **Componentes** | Instalação completa |
 | **Critérios de aceitação** | §12, integral |
-| **Riscos e recuperação** | Acesso por estação depende de rede local — se a H5 se confirmar só depois de vendida, a URL da API (§2.6 linha 3) já precisa estar resolvida antes |
+| **Riscos e recuperação** | Acesso por estação depende de rede local — a URL da API (§2.6 linha 3) já foi resolvida na SOFTPET-016 (verificação em duas máquinas físicas fica para o piloto) |
 | **Reaproveita** | Tudo |
 
 ---

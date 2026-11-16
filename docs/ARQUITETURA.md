@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart LR
-    B["Navegador<br/>Next.js App Router (src/app)"] -->|Axios, URL fixa| A["API Express<br/>porta 8800"]
+    B["Navegador<br/>Next.js App Router (src/app)"] -->|"Axios, URL resolvida em runtime (§2.4)"| A["API Express<br/>porta 8800"]
     A -->|driver mysql<br/>conexão única| D[("MySQL<br/>database petscrud")]
     B -.->|link externo| W["WhatsApp<br/>wa.me"]
 ```
@@ -19,7 +19,7 @@ Três camadas distintas no repositório:
 | API | `api/` | Express `^4.19.2` |
 | Persistência | `api/db.js` | driver `mysql` `^2.18.1` |
 
-Os números acima são **faixas declaradas** nos manifests, não versões instaladas comprovadas. A versão instalada só é definida para a API, pelo lockfile — ver §6.
+Os números acima são **faixas declaradas** nos manifests, não versões instaladas comprovadas. A versão instalada é definida pelos lockfiles, hoje presentes no `HEAD` da raiz e da `api/` — ver §6.
 
 Não há ORM, camada de serviço separada, repositório ou injeção de dependência. Os controllers chamam o driver diretamente.
 
@@ -28,7 +28,7 @@ Não há ORM, camada de serviço separada, repositório ou injeção de dependê
 ## 2. Frontend
 
 ### 2.1. App Router
-- `src/app/layout.js` — layout raiz, fonte Ubuntu, `lang="pt-Br"`, metadata `title: "SOFT PET"`.
+- `src/app/layout.js` — layout raiz, fonte Ubuntu, `lang="pt-Br"`, metadata `title: "SOFT PET"`. Carrega `public/softpet-config.js` via `next/script` com `strategy="beforeInteractive"` (§2.4).
 - `src/app/page.js` — *client component* (`"use client"`). Mantém o estado `pets` e `onEdit`, dispara `getPets()` no `useEffect` e renderiza `<Principal />` e o `<ToastContainer />` estilizado com styled-components.
 - `src/app/globals.css` — variáveis CSS (gradientes, cores, tamanhos, pesos).
 - `src/app/page.module.css` — **vazio** (apenas espaços em branco), porém importado em `page.js`.
@@ -53,6 +53,16 @@ Os três arquivos com **apenas exportação nomeada** (`Form.js`, `SearchFilter.
 - CSS puro com variáveis em `globals.css`, distribuído em `bloco.css`, `modal.css`, `button.css`, `style.css`.
 - `styled-components` `^6.1.11` é usado em `page.js` (container do toast) e tem um bloco `webpack` em `next.config.mjs` com `resolve.fallback` **vazio**. Não há plugin SWC/Babel configurado para styled-components no App Router. Consequência prática **não verificada**.
 - `jsconfig.json` define o alias `@/*` → `./src/*`.
+
+### 2.4. Configuração da URL da API (runtime) — SOFTPET-016
+
+Implementado na sessão SOFTPET-016 (2026-11-05); decisão registrada como **D9** em `memory-bank/DECISIONS.md`. Fluxo:
+
+1. `public/softpet-config.js` — servido **em runtime** (arquivo em `public/`, editável sem rebuild) e carregado antes da aplicação interagir; define `window.__SOFTPET_CONFIG__ = { API_BASE_URL: "" }`. Vazio = sem override; valor explícito tem prioridade; não colocar segredo neste arquivo.
+2. `src/config/api.js` — módulo único consumido por todos os call sites do CRUD. Ordem de resolução, avaliada **apenas quando as funções são chamadas** (nunca no import — seguro para SSR): **(a)** override explícito não vazio (barra final normalizada); **(b)** fallback `${protocol}//${hostname}:${8800}` — o `hostname` vem do `window.location` de quem acessa a página. `joinUrl` garante junção sem `//` duplicado.
+3. Os 6 call sites (`page.js`, `principal.js`, `Bloco.js`, `Form.js`, `ModalCad.js`, `ModalEdit.js`) usam `apiUrl(path)`; **zero** ocorrências de `localhost:8800` hardcoded em `src/`. A porta 8800 está centralizada neste módulo; não há variável de ambiente de porta nesta etapa.
+
+Efeito prático: uma estação que abre a aplicação pelo IP/nome do computador principal passa a chamar a API nesse mesmo host, e não no `localhost` da própria estação. Verificada em navegador com mock HTTP (localhost, 127.0.0.1 e override sem rebuild — `QUALITY-REVIEW.md` §13). Teste em duas máquinas físicas continua pendente.
 
 ---
 
@@ -144,7 +154,7 @@ O estado da lista vive em `page.js` e é repassado por props para `principal.js`
 
 `next` `^14.2.3`, `react`/`react-dom` `^18.2.0`, `styled-components` `^6.1.11`, `react-hook-form` `^7.51.5`, `zod` `^3.23.8`, `@hookform/resolvers` `^3.4.2`, `react-modal` `^3.16.1`, `react-toastify` `^10.0.5`, `axios` `^1.7.2`, `express` `^4.19.2`, `cors` `^2.8.5`, `eslint-config-next` `^13.5.6`.
 
-**Situação:** sem lockfile versionado no repositório. Há hoje um lockfile **local** (não rastreado, origem não confirmada) — a árvore resolvida por ele é observação local e não prova a versão originalmente usada pelo projeto.
+**Situação:** lockfile **versionado** presente (`package-lock.json`, no `HEAD` — confirmado via `git ls-files` em 2026-11-10; origem do surgimento em 2026-11-04 registrada como não confirmada). Resolução reproduzível via `npm ci` (verificada em cópia isolada, exit 0).
 
 **Declaradas sem importação identificada em código:** `@aws-sdk/credential-providers`, `@mongodb-js/zstd`, `aws4`, `gcp-metadata`, `mongodb`, `mongodb-client-encryption`, `snappy`, `mongoose`.
 
@@ -161,7 +171,7 @@ O estado da lista vive em `page.js` e é repassado por props para `principal.js`
 
 | Local | Lockfile | Consequência |
 |---|---|---|
-| Raiz | **Não versionado**; há lockfile local (não rastreado, origem não confirmada) | Instalação não definida pelo repositório; a resolução local é observação, não autoridade |
+| Raiz | **Presente** (versionado no `HEAD`) | Instalação reproduzível via `npm ci`; resolução verificada em cópia isolada (exit 0) |
 | `api/` | **Presente** | Instalação reproduzível; versões resolvidas conhecidas |
 
 `node_modules` da raiz existe hoje em nível local (origem não confirmada) e não é versionado — é justamente o que `/node_modules` no `.gitignore` exclui.
@@ -174,11 +184,11 @@ O estado da lista vive em `page.js` e é repassado por props para `principal.js`
 |---|---|
 | `next.config.mjs` | Apenas `webpack` com `resolve.fallback` vazio; sem `pageExtensions`, sem plugin styled-components |
 | `jsconfig.json` | Alias `@/*` → `./src/*` |
-| `.gitignore` | Contém somente `/node_modules` — não cobre `api/node_modules` nem `.next`, ambos versionados |
+| `.gitignore` | Contém `/node_modules` e as regras de `.env` (`.env`, `.env.*`, `!.env.example` — SOFTPET-015); não cobre `api/node_modules` nem `.next`, ambos versionados |
 | `.env` | Inexistente; nenhuma variável de ambiente é lida pelo código |
 | CI/CD | Inexistente — nenhum pipeline encontrado |
-| Testes | Inexistentes — nenhum teste próprio nem framework configurado |
-| URL da API | Fixa em `http://localhost:8800`, repetida em 6 arquivos do frontend |
+| Testes | 4 arquivos em `api/test/` com `node:test` nativo (`getPets`, `petErrors`, `databaseConfig`, `apiConfig`), via `npm --prefix ./api test` — suíte real de 63 testes, mocks locais, sem banco real |
+| URL da API | Centralizada em `src/config/api.js` com override de runtime via `public/softpet-config.js` e fallback pelo hostname acessado — ver §2.4 (SOFTPET-016). A **porta** 8800 continua fixa no código da API (`api/index.js`), sem variável de ambiente |
 
 ---
 
@@ -186,7 +196,7 @@ O estado da lista vive em `page.js` e é repassado por props para `principal.js`
 
 São apenas propostas, a confirmar antes de executar:
 
-- Centralizar a URL da API em um único módulo de configuração, para eliminar as seis ocorrências repetidas.
+- ~~Centralizar a URL da API em um único módulo de configuração, para eliminar as seis ocorrências repetidas.~~ **Implementado na SOFTPET-016** (2026-11-05) — ver §2.4 e decisão D9 no `memory-bank/DECISIONS.md`.
 - ~~Definir a conexão do banco por variáveis de ambiente, com `.env` fora do versionamento e `.env.example` documentando os nomes.~~ **Implementado na SOFTPET-015** (2026-11-05) — ver §4 e decisão D8 no `memory-bank/DECISIONS.md`.
 - ~~Avaliar se `src/pages/componentes/` deve permanecer sob a convenção de rotas do Pages Router ou ser movida para fora de `src/pages`.~~ **Implementado na SOFTPET-011** — a árvore foi movida para `src/components/` (decisão D7 no `memory-bank/DECISIONS.md`; estado atual na §2.2).
 - Registrar o DDL da tabela `pets` no repositório, para que o schema deixe de ser inferido apenas pelas queries.

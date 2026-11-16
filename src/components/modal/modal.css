@@ -58,9 +58,11 @@
   display: flex;
   gap: 8px;
 }
-.spanExtra,
+.spanExtra {
+  color: #F2F5F9;
+}
 ::placeholder {
-  color: var(--color-grey);
+  color: #9FB0C7;
 }
 .campo input {
   font-size: 0.9rem;
@@ -71,6 +73,10 @@
   border: 3px solid var(--color-grey);
   border-radius: 10px;
   color: var(--color-light);
+}
+.campo input:focus-visible {
+  outline: 2px solid #9FB0C7;
+  outline-offset: 2px;
 }
 .divPet {
   display: flex;
@@ -83,7 +89,7 @@
   border: none;
   border: 3px solid var(--color-grey);
   border-radius: 10px;
-  color: var(--color-grey);
+  color: #F2F5F9;
   cursor: pointer;
 }
 .divPet label {

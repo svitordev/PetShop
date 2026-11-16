@@ -66,8 +66,9 @@ Decisões de **processo**, tomadas nesta sessão. Nenhuma decisão técnica de s
 | D6 | A FASE 2 foi executada manualmente, pois a skill `project-bootstrap` não está instalada neste ambiente. | Esta sessão |
 | D7 | Componentes compartilhados ficam **fora das convenções de roteamento** `app`/`pages`. O local atual escolhido é `src/components/` (movido de `src/pages/componentes/` na sessão SOFTPET-011, 2026-11-04; organização interna preservada). Decisão factual desta sessão — sem justificativa histórica. | `src/components/` |
 | D8 | **A configuração de banco não pertence ao código-fonte.** `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_NAME` são fornecidas pelo **ambiente de execução**, sem fallback embutido. Para a futura versão comercial, o instalador/launcher será o responsável por fornecer essa configuração; o mecanismo exato ainda será definido. Decisão factual da sessão SOFTPET-015 (2026-11-05). | `api/config/database.js`, `api/.env.example` |
+| D9 | **A configuração de endpoint da API é runtime, não build-time.** O frontend resolve a URL da API ao chamar as funções (nunca no import): override explícito em `public/softpet-config.js` (`window.__SOFTPET_CONFIG__`, servido sem rebuild) tem prioridade; sem override, fallback `protocol + hostname + :8800` — o hostname é o do acesso do navegador. A porta 8800 default fica centralizada no módulo; sem variável de ambiente de porta, sem dotenv, sem proxy/rewrite, sem `axios.create()` nesta etapa. Decisão factual da sessão SOFTPET-016 (2026-11-05). | `src/config/api.js`, `public/softpet-config.js` |
 
-**Nenhuma decisão técnica foi tomada sobre:** banco de dados (motor — a migração para PostgreSQL segue proposta P15), ORM, framework, biblioteca de estilos, plugin de build ou autenticação. **Estrutura de pastas:** decidida na SOFTPET-011 — ver D7. **Configuração de banco (fonte dos valores, não o motor):** decidida na SOFTPET-015 — ver D8.
+**Nenhuma decisão técnica foi tomada sobre:** banco de dados (motor — a migração para PostgreSQL segue proposta P15), ORM, framework, biblioteca de estilos, plugin de build ou autenticação. **Estrutura de pastas:** decidida na SOFTPET-011 — ver D7. **Configuração de banco (fonte dos valores, não o motor):** decidida na SOFTPET-015 — ver D8. **Configuração do endpoint da API:** decidida na SOFTPET-016 — ver D9.
 
 > **Nota desta rodada:** as propostas P15 a P24 nasceram do planejamento comercial e **continuam propostas** — nenhuma foi aprovada. O detalhamento está em `docs/PLANO-COMERCIAL-LOCAL.md`. Esta seção continua valendo como estava.
 
@@ -81,7 +82,7 @@ Propostas — **nenhuma foi aprovada**.
 |---|---|---|
 | P1 | Parametrizar a busca SQL. | Decorre de F11; a parametrização já é usada nos demais controllers |
 | P2 | Mover a conexão do banco para variáveis de ambiente, com `.env.example`. | Decorre de F9 |
-| P3 | Centralizar a URL da API em um módulo de configuração. | Decorre de F10 |
+| P3 | Centralizar a URL da API em um módulo de configuração. | Decorre de F10 — **implementado na SOFTPET-016** (D9) |
 | P4 | Adicionar validação de entrada na API. | Decorre de F14 |
 | P5 | Adicionar middleware de tratamento de erros com status adequados. | Decorre de F12 |
 | P6 | Conferir o resultado das consultas em `update` e `delete`. | Decorre de F13 |
@@ -95,7 +96,7 @@ Propostas — **nenhuma foi aprovada**.
 | P14 | Adicionar testes progressivos, um por correção relevante. | Decorre de F21 |
 | P15 | **PostgreSQL** como banco do produto — **uma única** implementação de persistência no MVP; o MySQL atual permanece apenas como base de legado até a migração. | `docs/PLANO-COMERCIAL-LOCAL.md` §5. **Não aprovada.** Condicionada a V1 |
 | P16 | Manter Next.js/React e Express; **sem** Electron, Tauri, Docker, WSL ou microserviços no MVP — o acesso por navegador atende ao objetivo. | `docs/PLANO-COMERCIAL-LOCAL.md` §6.2 e §6.7 |
-| P17 | Centralizar a URL da API em **configuração de tempo de execução** — deixa de ser conveniência e passa a ser **pré-requisito** para acesso por estação. | Decorre de F10; `docs/PLANO-COMERCIAL-LOCAL.md` §6.3 |
+| P17 | Centralizar a URL da API em **configuração de tempo de execução** — deixa de ser conveniência e passa a ser **pré-requisito** para acesso por estação. | Decorre de F10; `docs/PLANO-COMERCIAL-LOCAL.md` §6.3 — **implementado na SOFTPET-016** (D9); teste em duas máquinas físicas pendente |
 | P18 | Separar programa instalado e dados do cliente (configuração, anexos, backups) em pastas distintas. | `docs/PLANO-COMERCIAL-LOCAL.md` §6.6 |
 | P19 | Vínculo entre tutor e pet tratado como **relação com vigência**, para preservar a identificação histórica dos atendimentos. | `docs/PLANO-COMERCIAL-LOCAL.md` §7.2 |
 | P20 | **Não** adotar exclusão em cascata de prontuários sem política escrita; arquivar em lugar de apagar. | `docs/PLANO-COMERCIAL-LOCAL.md` §7.4 |

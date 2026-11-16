@@ -16,7 +16,7 @@ Este é um sistema para gerenciamento de pets desenvolvido com **Next.js**, **Ex
 - ✏️ Edição e exclusão de registros  
 - 📱 Botão de contato via WhatsApp com o dono  
 
-Todas as funcionalidades acima existem no código. Nenhuma delas foi **executada e validada** até o momento — ver `memory-bank/CURRENT-STATE.md`.
+Todas as funcionalidades acima existem no código. Várias foram **executadas e validadas** em sessões de verificação com mocks/interceptação HTTP local (ver `memory-bank/CURRENT-STATE.md` e `QUALITY-REVIEW.md`); o projeto tem testes em `api/test/` (4 arquivos, `node:test` nativo, via `npm --prefix ./api test`), com mocks locais e sem banco real.
 
 ---
 
@@ -42,7 +42,7 @@ Campos observados nas queries de `api/controllers/pet.js`. O DDL da tabela `pets
 
 ### 🖥️ Frontend (raiz do repositório)
 
-Versões **declaradas** em `package.json` da raiz. O repositório **não tem lockfile versionado** no `HEAD`. Há hoje um lockfile **local** (`package-lock.json`, não rastreado, origem não confirmada) — a árvore resolvida por ele é **observação local**, não algo definido por este repositório.
+Versões **declaradas** em `package.json` da raiz. O repositório **tem lockfile versionado** na raiz (`package-lock.json`, presente no `HEAD` — confirmado via `git ls-files` em 2026-11-10; origem do surgimento em 2026-11-04 registrada como não confirmada). A resolução é reproduzível via `npm ci` (verificada em cópia isolada, exit 0).
 
 - [Next.js](https://nextjs.org/) `^14.2.3` — App Router em `src/app`
 - [React](https://reactjs.org/) `^18.2.0` / React DOM `^18.2.0`
@@ -112,6 +112,10 @@ Procedimento **identificado a partir dos arquivos** e **não executado** nesta e
 3. Na raiz, instalar dependências e iniciar: `npm install` e `npm run dev` (porta 3000).
 
 A conexão com o banco é configurada **exclusivamente por variáveis de ambiente**, todas obrigatórias: `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_NAME`. Sem elas (ou com alguma vazia/`""`), a API **falha ao iniciar**, antes de qualquer consulta, listando apenas os nomes ausentes. `api/.env.example` documenta os nomes com placeholders — `.env` está fora do versionamento e **não é carregado automaticamente** pelo aplicativo; quem carrega o ambiente é o processo de execução/launcher/instalador.
+
+### URL da API
+
+Por padrão o frontend chama a API na porta **8800** do **mesmo host por que a página foi acessada** (protocolo + hostname + `:8800`) — quem abre o sistema pelo IP/nome do computador principal chama a API lá, e não no `localhost` da própria máquina. Para fixar um endereço específico, edite `public/softpet-config.js` (campo `API_BASE_URL`; vazio = resolução automática). Esse arquivo é lido **em runtime**, no carregamento da página — **não exige `npm run build` novamente**. Não coloque segredos nele. A porta 8800 default fica centralizada em `src/config/api.js`.
 
 ---
 

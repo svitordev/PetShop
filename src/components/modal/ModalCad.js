@@ -15,6 +15,7 @@ import { ButtonBack } from "./buttons";
 import close from "@/assets/icone/close.svg";
 import "@/components/modal/modal.css";
 import axios from "axios";
+import { apiUrl } from "@/config/api";
 import { toast } from "react-toastify";
 const petsCreateSchema = z.object({
   namePet: z.string().min(1, "O nome do pet é obrigatório."),
@@ -40,7 +41,7 @@ const ModalCad = ({
   });
   async function handleCreate(dados) {
     await axios
-      .post("http://localhost:8800/", dados)
+      .post(apiUrl("/"), dados)
       .then(({ data }) => {
         getPets();
         onRequestClose();

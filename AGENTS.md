@@ -12,7 +12,7 @@ Ordem de confiança para tomada de decisão:
 
 1. **Código atual** do repositório;
 2. **Configuração atual** (`package.json`, `next.config.mjs`, `jsconfig.json`, `.gitignore`);
-3. **Testes** (inexistentes no projeto até o momento);
+3. **Testes** (`api/test/` — 4 arquivos com `node:test` nativo, executados via `npm --prefix ./api test`; mocks locais, sem banco real);
 4. **Documentação do projeto** (`README.md`, `PROJETO.md`, `docs/`, `memory-bank/`);
 5. Documentação externa;
 6. Suposições.
@@ -54,6 +54,8 @@ Quando uma skill estiver ausente, o trabalho correspondente é feito manualmente
 - `quality-review` — revisão de qualidade, com relatório próprio.
 - `safe-implementation` — implementação controlada de uma mudança aprovada.
 
+Adicionalmente, a skill global `goal-orchestrator` (instalada em `~/.copilot/skills/`) é o fluxo de execução controlada em vigor neste repositório desde 2026-11-10: Builder = agente em sessão; Inspector = `gemini-4-argon-high` via Antigravity CLI, em plan mode, com gate JSON determinístico e sem avanço em FAIL/BLOCKED. As regras antigas de execução manual dos papéis do projeto **não** autorizam substituir o Inspector nem forçar aprovação — aprovação só vem de veredito válido do Inspector.
+
 ## Princípios de execução
 
 - **Preservar alterações locais** preexistentes. Não fazer reset, checkout, pull nem descarte para "igualar" o workspace.
@@ -77,6 +79,7 @@ Quando uma skill estiver ausente, o trabalho correspondente é feito manualmente
 Estas são **observações do estado atual**, não regras impostas:
 
 - Alias de importação `@/*` → `./src/*` (`jsconfig.json`).
-- Componentes compartilhados vivem em `src/pages/componentes/`, embora `src/pages` participe da convenção de roteamento do Pages Router.
+- Componentes compartilhados vivem em `src/components/` (movidos de `src/pages/componentes/` na SOFTPET-011); o roteamento é o App Router via `src/app/`.
 - `next.config.mjs` não define `pageExtensions`.
-- `.gitignore` da raiz contém apenas `/node_modules`.
+- `.gitignore` da raiz contém `/node_modules` e as regras de `.env` (`.env`, `.env.*`, `!.env.example` — SOFTPET-015).
+- Lockfiles versionados no `HEAD`: `package-lock.json` na raiz e `api/package-lock.json`.

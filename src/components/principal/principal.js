@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { apiUrl } from "@/config/api";
 import { toast } from "react-toastify";
 import React, { useState, useRef } from "react";
 import "@/components/principal/style.css";
@@ -33,7 +34,7 @@ const principal = ({ getPets, pets, setPets, setOnEdit }) => {
   
   const handleSearch = async (searchTerm) => {
     try {
-      const res = await axios.get(`http://localhost:8800?search=${searchTerm}`);
+      const res = await axios.get(apiUrl(`/?search=${searchTerm}`));
       setPets(res.data);
       toast.success(`${searchTerm} encontrado!`);
     } catch {

@@ -12,6 +12,8 @@
 >
 > **Atualização (sessão 11 — SOFTPET-012, 2026-11-04):** **QLT-002 implementado e `FIXED`** — `ButtonDelete` passou a `type="button"` e `handleDelete` foi reorganizado (sucesso: toast + `getPets()` + fechar modal; erro: apenas toast, modal aberto). **Os três cenários (200/404/500) passaram no navegador, sem `?submit=`** (§12). Stage do `git mv` da sessão anterior normalizado (índice = HEAD). Referências de caminho em `README.md`/`PROJETO.md` corrigidas.
 >
+> **Atualização (sessão 14 — SOFTPET-016, 2026-11-05):** **QLT-011 implementado e `FIXED`** — URL da API centralizada em `src/config/api.js`, com override de runtime via `public/softpet-config.js` e fallback automático pelo hostname acessado. **Os três cenários Playwright passaram** — `localhost`, `127.0.0.1` (prova principal) e override de runtime **sem rebuild** (§13). Suíte ampliada para **63/63**. Cópia isolada: `npm ci` exit 0, build exit 0.
+>
 > **Papel:** Tech Lead + QA. Esta revisão **não** reescreve `SECURITY-AUDIT.md` — findings de segurança permanecem lá, com IDs próprios (`SEC-XXX`). Nenhum achado novo de segurança foi encontrado nesta rodada; onde a qualidade toca um achado de segurança, há **referência cruzada**, não duplicação.
 
 ---
@@ -57,16 +59,16 @@ HEAD completo: `b9fc914fe0873fef78a7b86a972202c2de34bce6` — igual ao último r
 | QLT-008 | P2 | Conexão única com o MySQL, sem pool e sem recuperação | Aberto |
 | QLT-009 | P2 | Schema/DDL da tabela `pets` não existe no repositório | Aberto |
 | **QLT-010** | **P1** (era P3) | Componentes dentro da convenção de rotas do Pages Router; `Form.js` | **FIXED** (SOFTPET-011 — movidos para `src/components/`; build isolado exit 0 — §11) |
-| QLT-011 | P3 | URL da API repetida em 6 arquivos (pré-requisito do plano comercial) | Aberto |
+| **QLT-011** | **P3** | URL da API repetida em 6 arquivos (pré-requisito do plano comercial) | **FIXED** (SOFTPET-016 — centralizada em `src/config/api.js` com override de runtime; cenários A/B/C verificados — §13) |
 | QLT-012 | P3 | Higiene de manifesto: dependências declaradas sem uso, `eslint-config-next` em `dependencies`, `styled-components` sem plugin, `nodemon` no `start` | Aberto |
 | QLT-013 | P3 | Qualidade dos testes: comparação de SQL literal, duplicação de harness, lacuna de integração | Aberto |
 | QLT-014 | P3 | Lista sem `key` + sort no cliente por campo inexistente | Aberto |
 | QLT-016 | P3 | Sem media queries — responsividade | Aberto |
 | QLT-015 | P4 | Cosméticos: `console.log`, `page.module.css` vazio, fonte duplicada, typo | Aberto |
 
-**Total: 16 findings — P0: 0 · P1: 3 · P2: 7 · P3: 5 · P4: 1** (QLT-003 reclassificado de P1 para P2 na SOFTPET-010 — §10; QLT-010 reavaliado de P3 para **P1** na SOFTPET-011 — bloqueio de build comprovado — e `FIXED` — §11; QLT-001 e QLT-002 `FIXED` — §12. A linha conta **por prioridade atual**, incluindo os já corrigidos).
+**Total: 16 findings — P0: 0 · P1: 3 · P2: 7 · P3: 5 · P4: 1** (QLT-003 reclassificado de P1 para P2 na SOFTPET-010 — §10; QLT-010 reavaliado de P3 para **P1** na SOFTPET-011 — bloqueio de build comprovado — e `FIXED` — §11; QLT-001, QLT-002 e QLT-011 `FIXED` — §12, §13. A linha conta **por prioridade atual**, incluindo os já corrigidos).
 
-**Ainda abertos: 13 — P2: 7 · P3: 5 · P4: 1.** Nenhum P1 permanece aberto. `QLT-001`, `QLT-002` e `QLT-010` estão `FIXED` e **não** são contados como abertos — os números não devem ser confundidos.
+**Ainda abertos: 12 — P2: 7 · P3: 4 · P4: 1.** Nenhum P1 permanece aberto. `QLT-001`, `QLT-002`, `QLT-010` e `QLT-011` estão `FIXED` e **não** são contados como abertos — os números não devem ser confundidos.
 
 ---
 
@@ -178,11 +180,12 @@ HEAD completo: `b9fc914fe0873fef78a7b86a972202c2de34bce6` — igual ao último r
 
 ### QLT-011 — URL da API repetida em 6 arquivos
 
-- **Prioridade:** P3 · **Estado:** Aberto · **Categoria:** Manutenção / pré-requisito do plano
-- **Evidência:** `http://localhost:8800` hardcoded em `page.js`, `principal.js`, `Bloco.js`, `Form.js`, `ModalCad.js`, `ModalEdit.js` (6 ocorrências, conferidas).
+- **Prioridade:** P3 · **Estado:** **`FIXED`** (sessão SOFTPET-016, 2026-11-05 — implementado no workspace real; cenários A/B/C verificados no navegador com mock HTTP — §13; **não `VERIFIED`** em duas máquinas físicas reais) · **Categoria:** Manutenção / pré-requisito do plano
+- **Evidência (estado anterior, confirmado por leitura):** `http://localhost:8800` hardcoded em `page.js`, `principal.js`, `Bloco.js`, `Form.js`, `ModalCad.js`, `ModalEdit.js` (6 ocorrências, conferidas).
 - **Impacto:** é o ponto que **decide a arquitetura de rede** do produto (PLANO-COMERCIAL §2.6/§6.3 — proposta P17): uma estação na rede resolveria `localhost` para si mesma. Deixou de ser conveniência e virou pré-requisito funcional.
-- **Menor correção:** um módulo de configuração de URL consumido pelos 6 pontos.
-- **Dependências:** nenhuma técnica; decisão de produto H5.
+- **Menor correção:** um módulo de configuração de URL consumido pelos 6 pontos. — **Executado na SOFTPET-016:** `src/config/api.js` (funções puras `resolveApiBaseUrl`/`joinUrl` + `getApiBaseUrl`/`apiUrl`, resolução apenas na chamada — nunca no import) + `public/softpet-config.js` (override de runtime `window.__SOFTPET_CONFIG__`, servido sem rebuild, carregado por `next/script` `beforeInteractive` no `layout.js`). Prioridade: config explícita → fallback `protocol + hostname + :8800`. Os 6 pontos passaram a usar `apiUrl()`; busca final: **0 ocorrências** de `localhost:8800` em `src/`. A porta 8800 ficou centralizada neste módulo (nenhuma variável de ambiente de porta nesta etapa). Decisão registrada como **D9**.
+- **Testes:** 10 testes unitários novos (`api/test/apiConfig.test.js`, funções puras, valores fictícios) — suíte **63/63**. Navegador: §13.
+- **Dependências:** nenhuma técnica; decisão de produto H5 — a implementação atende à H5 sem exigir decisão de stack.
 
 ### QLT-012 — Higiene de manifesto
 
@@ -253,6 +256,8 @@ HEAD completo: `b9fc914fe0873fef78a7b86a972202c2de34bce6` — igual ao último r
 
 **Justificativa da escolha (e por que não os outros):** QLT-004 e QLT-006 são P2 sem severidade de segurança; QLT-011 depende de **decisão de produto** (H5/P17) antes de virar implementação; SEC-005 é MÉDIA. SEC-007 é a única candidata cuja severidade é ALTA e cujas condições de disparo já estão no código. **Não implementado nesta rodada.**
 
+**Atualizado na SOFTPET-016 (2026-11-05):** SEC-007 e SEC-005 já foram `FIXED` com escopo (sessões SOFTPET-014B e SOFTPET-015), e o QLT-011 foi implementado nesta sessão (§13). O próximo item recomendado é **avaliar entre** SEC-004 (auditoria), QLT-004, QLT-006, QLT-007 e QLT-008 — sem implementação automática. Nota do plano: a futura migração para PostgreSQL (P15, não aprovada) pode esvaziar o QLT-008 — não investir excessivamente no driver MySQL legado.
+
 <details>
 <summary>Plano detalhado do QLT-002 (executado na SOFTPET-012 — resultado em §12)</summary>
 
@@ -274,7 +279,7 @@ Nenhum achado **novo** de segurança nesta rodada. Os existentes permanecem no `
 
 ## 9. O que bloqueia de fato a evolução para o produto (e o que pode esperar)
 
-**Bloqueiam (tratar antes/de dentro das etapas do plano):** QLT-009 (schema real — sem ele não há modelagem de prontuário nem migração), QLT-011 (URL da API — pré-requisito de rede, P17), ~~QLT-001~~ (**resolvido na SOFTPET-009** — integridade de escrita, base do prontuário), ~~QLT-010~~ (**resolvido na SOFTPET-011** — build de produção destravado, §11), credenciais/configuração por instalação (P2, já no plano).
+**Bloqueiam (tratar antes/de dentro das etapas do plano):** QLT-009 (schema real — sem ele não há modelagem de prontuário nem migração), ~~QLT-011~~ (**resolvido na SOFTPET-016** — URL centralizada com resolução de runtime, §13), ~~QLT-001~~ (**resolvido na SOFTPET-009** — integridade de escrita, base do prontuário), ~~QLT-010~~ (**resolvido na SOFTPET-011** — build de produção destravado, §11), ~~credenciais/configuração por instalação~~ (**resolvido na SOFTPET-015** — D8).
 
 **Podem esperar a etapa própria sem travar nada:** QLT-007 (limpeza de versionamento), QLT-012 (manifesto/lockfile), QLT-008 (pool — só se o legado MySQL viver mais ciclos), QLT-013–QLT-016.
 
@@ -453,3 +458,56 @@ Fluxo: idem 404, DELETE interceptado com 500 + `{"error":"Não foi possível con
 - Intercepção no navegador — driver/MySQL reais não exercitados.
 - Sessão única, sem concorrência. Toasts com `autoClose` de 1,5 s — observados durante a interação.
 - Não `VERIFIED` contra backend/banco real.
+
+---
+
+## 13. Implementação do QLT-011 — URL da API configurável em runtime (sessão SOFTPET-016)
+
+Execução **manual** da metodologia (`safe-implementation` indisponível; nenhuma skill executada — ambiente inalterado, sem busca extensa). Mudança no workspace real: **novos** `public/softpet-config.js` e `src/config/api.js`; `src/app/layout.js` passou a carregar o config com `next/script` (`strategy="beforeInteractive"`); os **6 call sites** do CRUD passaram a usar `apiUrl()`; `api/package.json` (script `test`) e `api/test/apiConfig.test.js` (novo). Backend, CORS, banco, autenticação, manifests e lockfiles intactos.
+
+### 13.1 Arquitetura implementada
+
+Resolução em duas camadas, avaliada **somente quando as funções são chamadas** (nunca no import — seguro para SSR):
+
+1. **Override explícito:** `window.__SOFTPET_CONFIG__.API_BASE_URL` (servido em runtime por `public/softpet-config.js`; valor vazio = sem override; barra final normalizada).
+2. **Fallback automático:** `${protocol}//${hostname}:${8800}` — o hostname vem do `window.location` da estação, que é exatamente o IP/nome do computador principal quando ela acessa pela rede.
+
+`joinUrl` garante junção sem `//` duplicado. A porta 8800 ficou centralizada em `src/config/api.js` — nenhuma variável de ambiente de porta nesta etapa, sem `axios.create()`, sem biblioteca de configuração, sem proxy/rewrite do Next.
+
+### 13.2 Inventário e verificação estática
+
+| Verificação | Resultado |
+|---|---|
+| Inventário antes da mudança | exatamente **6** ocorrências de `http://localhost:8800` nos 6 arquivos previstos |
+| Busca final `localhost:8800` em `src/` | **0 ocorrências** ✓ |
+| Suíte no workspace (`npm --prefix ./api test`) | **63/63** (53 anteriores + 10 novos em `apiConfig.test.js`), 0 cancelados, exit 0 ✓ |
+| Cópia isolada `%TEMP%\softpet-qlt011-s16` | `npm ci` raiz exit 0 · `npm run build` exit 0 ✓ |
+
+### 13.3 Cenários no navegador (mock HTTP próprio com log de `Host`)
+
+Intercepção por rota do Playwright mostrou-se instável nesta sessão; a evidência passou a ser feita com **dois servidores HTTP mock** (portas 8800 e 18800, fora do repositório) registrando método + URL + cabeçalho `Host` de cada requisição — o `Host` prova qual hostname o navegador usou. Fixtures 100% fictícias (§10.2). Frontend servido por `next start -p 3001` na cópia (porta 3000 ocupada por processo externo preexistente — não interferiu: a derivação do hostname não depende da porta do frontend).
+
+| Cenário | Evidência observada | Resultado |
+|---|---|---|
+| **A — `localhost`** | navegador em `http://localhost:3001`; mock 8800 registrou `GET / Host=localhost:8800`; 2 cards fictícios renderizados | ✓ |
+| **B — `127.0.0.1`** (prova principal) | navegador em `http://127.0.0.1:3001`; mock 8800 registrou `GET / Host=127.0.0.1:8800` — **não** `localhost`; 2 cards renderizados | ✓ |
+| **C — override sem rebuild** | `public/softpet-config.js` **da cópia** alterado para `http://127.0.0.1:18800/` **sem `npm run build` novamente**; recarregada a página, o mock 18800 registrou `GET / Host=127.0.0.1:18800` e o 8800 não recebeu mais nada; `window.__SOFTPET_CONFIG__` refletia o valor; barra final normalizada; página funcional | ✓ — **funcionou sem rebuild** |
+
+### 13.4 Smoke CRUD (no cenário B)
+
+| Ação | Resultado |
+|---|---|
+| Listagem inicial | 2 cards fictícios ✓ |
+| Busca por nome do pet (`Felinio`) | mock registrou `GET /?search=Felinio Host=127.0.0.1:8800`; lista filtrou para 1 card ✓ |
+| Expandir card | raça/telefone/nascimento aparecem ✓ |
+| Abrir edição | modal "Editar" abre ✓ (fechado sem enviar) |
+| Abrir exclusão | modal "Deletar" abre ✓ (fechado sem confirmar) |
+| Abrir cadastro | modal "Cadastrar" abre ✓ (fechado sem enviar) |
+
+Nenhuma chamada presa a `localhost` literal em nenhum momento.
+
+### 13.5 Limitações
+
+- A prova do hostname dinâmico usa `127.0.0.1` vs `localhost` na **mesma máquina** com mock — **não** duas máquinas físicas reais; teste em duas máquinas continua requisito de piloto (§12/etapa 7 do plano).
+- Mock HTTP próprio substitui a API real — driver/MySQL reais não exercitados.
+- Sessão única de navegador, sem concorrência. Nenhum screenshot salvo no repositório.

@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { Ubuntu } from "next/font/google";
 import "./globals.css";
 
@@ -14,7 +15,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-Br">
-      <body className={ubuntu.className}>{children}</body>
+      <body className={ubuntu.className}>
+        <Script src="/softpet-config.js" strategy="beforeInteractive" />
+        {children}
+      </body>
     </html>
   );
 }

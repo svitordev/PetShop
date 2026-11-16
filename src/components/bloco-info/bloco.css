@@ -105,5 +105,6 @@
   background-color: var(--color-light);
 }
 .buttonRemove {
-  background-image: var(--background-light);
+  background-image: linear-gradient(63deg, #006BDC, #0046BA 70%);
+  color: #FFFFFF;
 }
